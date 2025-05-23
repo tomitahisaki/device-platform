@@ -1,6 +1,5 @@
-import board
-import busio
 import Adafruit_DHT
+import time
 
 sensor = Adafruit_DHT.DHT11
 pin = 7
