@@ -45,3 +45,11 @@ pip install Adafruit_DHT
 ```bash
 deactivate
 ```
+
+## ラズパイ5とそれ以外のGPIOの違い
+
+ライブラリが異なるので注意する
+
+ラズパイ5 以外は`RPi.GPIO`を使用する
+
+ラズパイ5は、`lgpio`を使用する
