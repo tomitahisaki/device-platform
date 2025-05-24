@@ -34,7 +34,8 @@ sudo aput install adafruit-circuitpython-dht RPi.GPIO
 ```bash
 sudo apt install python3-venv -y # 必要なら、python3-pipも
 
-python3 -m venv ~/venv # 作成場所はどこでも
+python3 -m venv ~/venv --system-site-packages
+# --system-site-packages オプションは、システムのPythonパッケージを仮想環境で使用可能にします
 source ~/venv/bin/activate
 
 pip install Adafruit_DHT
