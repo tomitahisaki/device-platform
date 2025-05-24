@@ -1,7 +1,7 @@
-import Adafruit_dht
+import adafruit_dht
 import time
 
-sensor = Adafruit_dht.DHT11
+sensor = adafruit_dht.DHT11
 pin = 7
 count = 0
 
