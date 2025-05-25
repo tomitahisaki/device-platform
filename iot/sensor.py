@@ -1,31 +1,36 @@
 import time
 import board
 import adafruit_dht
+from RPLCD.i2c import CharLCD
 
-# DHT11 センサーを GPIO4（BCM）に接続（board.D4 は GPIO4 を意味する）
-dht_device = adafruit_dht.DHT11(board.D4)
+# DHT11 センサーを GPIO4 に接続
+dht_sensor = adafruit_dht.DHT11(board.D4)
 
-count = 0
-print("DHT11 センサー読み取り開始")
+# I2C LCD 初期化（0x27 アドレス）
+lcd = CharLCD('PCF8574', 0x27)
 
-while True:
+# 表示ループ（5回表示）
+for i in range(5):
     try:
-        temperature = dht_device.temperature
-        humidity = dht_device.humidity
+        temperature = dht_sensor.temperature
+        humidity = dht_sensor.humidity
 
-        if temperature is not None and humidity is not None:
-            print(f"{count+1}回目 → 温度: {temperature:.1f}°C, 湿度: {humidity:.1f}%")
-        else:
-            print(f"{count+1}回目 → センサーからのデータ取得に失敗しました。")
+        print(f"{i+1}回目 → 温度: {temperature:.1f}°C, 湿度: {humidity:.1f}%")
 
-    except RuntimeError as e:
-        print(f"{count+1}回目 → 読み取りエラー: {e}")
+        # LCD 表示
+        lcd.clear()
+        lcd.write_string(f'Temp:{temperature:>2}C')
+        lcd.cursor_pos = (1, 0)
+        lcd.write_string(f'Hum :{humidity:>2}%')
 
-    count += 1
-    if count >= 5:
-        break
+    except Exception as e:
+        lcd.clear()
+        lcd.write_string("読み取り失敗")
+        print(f"Error: {e}")
 
     time.sleep(5)
 
-# センサー使用後に明示的に解放
-dht_device.exit()
+# 終了時に LCD をクリア
+lcd.clear()
+dht_sensor.exit()
+
