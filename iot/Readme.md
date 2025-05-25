@@ -54,3 +54,11 @@ deactivate
 ラズパイ5 以外は`RPi.GPIO`を使用する
 
 ラズパイ5は、`lgpio`を使用する
+
+## ディスプレイ
+
+ライブラリは、`RPLCD`を使用する
+
+```bash
+pip install RPLCD
+```
