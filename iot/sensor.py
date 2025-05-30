@@ -11,24 +11,24 @@ lcd = CharLCD('PCF8574', 0x27)
 
 # 表示ループ（5回表示）
 for i in range(5):
-    try:
-        temperature = dht_sensor.temperature
-        humidity = dht_sensor.humidity
+  try:
+    temperature = dht_sensor.temperature
+    humidity = dht_sensor.humidity
 
-        print(f"{i+1}回目 → 温度: {temperature:.1f}°C, 湿度: {humidity:.1f}%")
+    print(f"{i+1}回目 → 温度: {temperature:.1f}°C, 湿度: {humidity:.1f}%")
 
-        # LCD 表示
-        lcd.clear()
-        lcd.write_string(f'Temp:{temperature:>2}C')
-        lcd.cursor_pos = (1, 0)
-        lcd.write_string(f'Hum :{humidity:>2}%')
+    # LCD 表示
+    lcd.clear()
+    lcd.write_string(f'Temp:{temperature:>2}C')
+    lcd.cursor_pos = (1, 0)
+    lcd.write_string(f'Hum :{humidity:>2}%')
 
-    except Exception as e:
-        lcd.clear()
-        lcd.write_string("読み取り失敗")
-        print(f"Error: {e}")
+  except Exception as e:
+    lcd.clear()
+    lcd.write_string("読み取り失敗")
+    print(f"Error: {e}")
 
-    time.sleep(5)
+  time.sleep(5)
 
 # 終了時に LCD をクリア
 lcd.clear()
