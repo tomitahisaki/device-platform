@@ -13,7 +13,7 @@ try:
   temperature = dht_sensor.temperature
   humidity = dht_sensor.humidity
 
-  print(f"{i+1}回目 → 温度: {temperature:.1f}°C, 湿度: {humidity:.1f}%")
+  print(f"温度: {temperature:.1f}°C, 湿度: {humidity:.1f}%")
 
   # LCD 表示
   lcd.clear()
