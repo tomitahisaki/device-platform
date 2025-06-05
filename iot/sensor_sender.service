@@ -1,0 +1,16 @@
+# /home/hisakey/iot/device/sensor_sender.service
+
+[Unit]
+Description=Send sensor data once on boot
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/python3 /home/hisakey/iot/device/send_data.py
+WorkingDirectory=/home/hisakey/iot/device
+StandardOutput=append:/home/hisakey/send_log.txt
+StandardError=append:/home/hisakey/send_log.txt
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
+
