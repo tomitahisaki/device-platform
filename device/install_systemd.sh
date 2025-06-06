@@ -1,7 +1,7 @@
 #!/bin/bash
 
 SERVICE_NAME="sensor_sender.service"
-SERVICE_PATH="/home/hisakey/iot/device/$SERVICE_NAME"
+SERVICE_PATH="/home/hisakey/device-platform/device/$SERVICE_NAME"
 TARGET_PATH="/etc/systemd/system/$SERVICE_NAME"
 
 # コピー

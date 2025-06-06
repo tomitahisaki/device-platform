@@ -1,6 +1,6 @@
 #!/bin/bash
 
-SCRIPT_PATH="/home/hisakey/iot/device/send_data.py"
+SCRIPT_PATH="/home/hisakey/device-platform/device/send_data.py"
 PYTHON_PATH="$(which python3)"
 LOG_PATH="/home/hisakey/send_log.txt"
 
