@@ -5,7 +5,7 @@ Description=Send sensor data once on boot
 After=network.target
 
 [Service]
-ExecStart=/usr/bin/python3 /home/hisakey/device-platform/device/send_data.py
+ExecStart=/home/hisakey/venv/bin/python /home/hisakey/device-platform/device/send_data.py
 WorkingDirectory=/home/hisakey/device-platform/device
 StandardOutput=append:/home/hisakey/send_log.txt
 StandardError=append:/home/hisakey/send_log.txt

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 SCRIPT_PATH="/home/hisakey/device-platform/device/send_data.py"
-PYTHON_PATH="$(which python3)"
+PYTHON_PATH="/home/hisakey/venv/bin/python"
 LOG_PATH="/home/hisakey/send_log.txt"
 
 # cron: 毎日 0, 6, 12, 18時に実行
