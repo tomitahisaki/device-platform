@@ -12,7 +12,7 @@ lcd = CharLCD('PCF8574', 0x27)
 try:
   temperature = dht_sensor.temperature
   humidity = dht_sensor.humidity
-  current_time = Datetime.now().strftime('%Y-%m-%d %H:%M')
+  current_time = datetime.now().strftime('%Y-%m-%d %H:%M')
 
   temp_format = f'Temp:{temperature:>2}C'
   hum_format = f'Hum :{humidity:>2}%'
@@ -27,7 +27,7 @@ try:
   lcd.write_string(hum_format)
 
 except Exception as e:
-  current_time = Datetime.now().strftime('%Y-%m-%d %H:%M')
+  current_time = datetime.now().strftime('%Y-%m-%d %H:%M')
   error_message = f"[{current_time}] 読み取り失敗: {e}"
   lcd.clear()
   lcd.write_string(error_message)
