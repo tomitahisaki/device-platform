@@ -2,6 +2,7 @@ import time
 import board
 import adafruit_dht
 from RPLCD.i2c import CharLCD
+from datetime import datetime
 
 # DHT11 センサーを GPIO4 に接続
 dht_sensor = adafruit_dht.DHT11(board.D4)
