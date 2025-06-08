@@ -3,9 +3,10 @@
 SCRIPT_PATH="/home/hisakey/device-platform/device/send_data.py"
 PYTHON_PATH="/home/hisakey/venv/bin/python"
 LOG_PATH="/home/hisakey/send_log.txt"
+ERR_PATH="/home/hisakey/send_error.txt"
 
-# cron: 毎日 0, 6, 12, 18時に実行
-CRON_JOB="0 */6 * * * $PYTHON_PATH $SCRIPT_PATH >> $LOG_PATH 2>&1"
+# cron: 毎日 0, 6, 12, 18時に実行（テスト中なら "* * * * *" もOK）
+CRON_JOB="0 */6 * * * $PYTHON_PATH $SCRIPT_PATH >> $LOG_PATH 2>> $ERR_PATH"
 
 # 一時ファイルに現在のcronをバックアップしつつ、該当行を除外
 TEMP_CRON=$(mktemp)
