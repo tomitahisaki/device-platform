@@ -1,0 +1,30 @@
+version: 2
+
+formatters:
+  enable:
+    - gofmt
+    - goimports
+
+linters:
+  enable:
+    - govet
+    - errcheck
+    - staticcheck
+    - unused
+    - revive
+    - gocritic
+    - ineffassign
+
+run:
+  tests: true
+
+issues:
+  exclude-use-default: false
+
+# 任意で除外設定
+# skip-dirs:
+#   - mocks
+#   - vendor
+# skip-files:
+#   - .*_generated\.go
+
