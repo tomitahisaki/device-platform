@@ -5,9 +5,19 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+
+  "github.com/your-org/device-platform/backend/config"
 )
 
 func main() {
+  config.Load()
+
+  if config.Cfg.App.Port != "" {
+    fmt.Println("load成功")
+  } else {
+    fmt.Println("load失敗")
+  }
+
 	http.HandleFunc("/ping", func(w http.ResponseWriter, _ *http.Request) {
 		if _, err := fmt.Fprintln(w, "pong"); err != nil {
 			log.Println("error writing response:", err)
