@@ -3,21 +3,23 @@ package main
 
 import (
 	"fmt"
-	"log"
+	"net/http"
 
-  "github.com/your-org/device-platform/backend/config"
-  "github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin"
+	"github.com/your-org/device-platform/backend/internal/config"
+	"github.com/your-org/device-platform/backend/internal/db"
 )
 
 func main() {
-  config.Load()
+	config.Load()
+	db.Init()
 
-  r := gin.Default()
-  r.GET("/", func(c *gin.Context) {
-    c.JSON(http.StatusOK, gin.H{"message": "hello gin"})
-  })
-  
-  if err := r.RUN(":" + config.Cfg.App.Port); err != nil {
-    fmt.Println("Failed to start server:", err)
-  }
+	r := gin.Default()
+	r.GET("/", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{"message": "hello gin"})
+	})
+
+	if err := r.Run(":" + config.Cfg.App.Port); err != nil {
+		fmt.Println("Failed to start server:", err)
+	}
 }
