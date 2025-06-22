@@ -1,4 +1,3 @@
-// Package db
 package db
 
 import (
