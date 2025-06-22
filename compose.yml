@@ -1,5 +1,3 @@
-version: "3.9"
-
 services:
   backend:
     build:
@@ -14,6 +12,8 @@ services:
       - ./backend/.env
     depends_on:
       - db
+    networks:
+      - backend_net
     command: ["air"]
 
   db:
@@ -27,7 +27,21 @@ services:
       - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
+    networks:
+      - backend_net
+
+  migrate:
+    image: migrate/migrate
+    volumes:
+      - ./backend/migrations:/migrations
+    depends_on:
+      - db
+    networks:
+    - backend_net
+
 
 volumes:
   pgdata:
 
+networks:
+  backend_net:
