@@ -3,21 +3,17 @@ package main
 
 import (
 	"fmt"
-	"net/http"
 
-	"github.com/gin-gonic/gin"
 	"github.com/your-org/device-platform/backend/internal/config"
 	"github.com/your-org/device-platform/backend/internal/db"
+  "github.com/your-org/device-platform/backend/internal/router"
 )
 
 func main() {
 	config.Load()
-	db.Init()
+  db.Init()
 
-	r := gin.Default()
-	r.GET("/", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{"message": "hello gin"})
-	})
+  r :=router.SetupRouter(db.DB)
 
 	if err := r.Run(":" + config.Cfg.App.Port); err != nil {
 		fmt.Println("Failed to start server:", err)
