@@ -39,3 +39,7 @@ func (usecase *sensorDataUseCase) SaveSensorData(temperature float64, humidity f
 
   return tx.Commit().Error
 }
+
+func (usecase *sensorDataUseCase) GetAllSensorData() ([]model.SensorData, error) {
+  return usecase.repository.GetAll()
+}

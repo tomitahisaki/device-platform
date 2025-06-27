@@ -36,3 +36,12 @@ func (controller *SensorDataController) PostSensorData(context *gin.Context) {
   context.JSON(http.StatusCreated, gin.H{"message": "sensor data saved successfully"})
 }
 
+func (controller *SensorDataController) GetAllSensorData(context *gin.Context) {
+  data, err := controller.usecase.GetAllSensorData()
+  if err != nil {
+    context.JSON(http.StatusInternalServerError, gin.H{"error": "failed to retrieve sensor data"})
+    return
+  }
+
+  context.JSON(http.StatusOK, data)
+}

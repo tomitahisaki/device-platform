@@ -8,6 +8,7 @@ import (
 tpe SensorDataRepository interface {
   BeginTx() *gorm.DB
   Save(tx *gorm.DB, data *model.SensorData) error
+  GetAll([]model.SensorData, error)
 }
 
 type SensorDataRepository struct {
@@ -24,4 +25,12 @@ func (r *SensorDataRepository) BeginTx() *gorm.DB {
 
 func (r *SensorDataRepository) Save(tx *gorm.DB, data *model.SensorData) error {
   return tx.Create(data).Error
+}
+
+func (r *SensorDataRepository) GetAll() ([]model.SensorData, error) {
+  var sensorData []model.ensorData
+  if err := r.db.Order("id DESC").Find(&sensorData).Error; err != nil {
+    return nil, err
+  }
+  return sensorData, nil
 }
