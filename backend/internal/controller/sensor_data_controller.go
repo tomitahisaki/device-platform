@@ -4,43 +4,42 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/your-org/device-platform/backend/internal/model"
-	"gorm.io/gorm"
+	"github.com/your-org/device-platform/backend/internal/usecase"
 )
 
-type SensorDataInput struct {
+type SensorDataController struct {
+	usecase usecase.SensorDataUseCase
+}
+
+func NewSensorDataController(usecase usecase.SensorDataUseCase) *SensorDataController {
+	return &SensorDataController{usecase: usecase}
+}
+
+type SensorDataRequest struct {
 	Temperature float64 `json:"temperature" binding:"required"`
 	Humidity    float64 `json:"humidity" binding:"required"`
 }
 
-func PostSensorData(c *gin.Context, db *gorm.DB) {
-	var input SensorDataInput
-
-	if err := c.ShouldBindJSON(&input); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+func (controller *SensorDataController) PostSensorData(context *gin.Context) {
+	var request SensorDataRequest
+	if err := context.ShouldBindJSON(&request); err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{"error": "invalid request data"})
 		return
 	}
 
-	data := model.SensorData{
-		Temperature: input.Temperature,
-		Humidity:    input.Humidity,
+	if err := controller.usecase.SaveSensorData(request.Temperature, request.Humidity); err != nil {
+		context.JSON(http.StatusInternalServerError, gin.H{"error": "failed to save sensor data"})
 	}
 
-	if err := db.Create(&data).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "保存に失敗しました"})
-		return
-	}
-
-	c.JSON(http.StatusCreated, data)
+	context.JSON(http.StatusCreated, gin.H{"message": "sensor data saved successfully"})
 }
 
-func GetSensorData(c *gin.Context, db *gorm.DB) {
-	var data []model.SensorData
-
-	if err := db.Order("created_at desc").Find(&data).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "取得に失敗しました"})
+func (controller *SensorDataController) GetAllSensorData(context *gin.Context) {
+	data, err := controller.usecase.GetAllSensorData()
+	if err != nil {
+		context.JSON(http.StatusInternalServerError, gin.H{"error": "failed to retrieve sensor data"})
 		return
 	}
 
-	c.JSON(http.StatusOK, data)
+	context.JSON(http.StatusOK, data)
 }
