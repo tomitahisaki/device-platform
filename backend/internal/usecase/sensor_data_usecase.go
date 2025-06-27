@@ -18,10 +18,24 @@ func NewSensorDataUseCase(repository repository.SensorDataRepository) SensorData
 }
 
 func (usecase *sensorDataUseCase) SaveSensorData(temperature float64, humidity float64) error {
+  tx := usecase.repository.BeginTx()
+
+  defer func() {
+    if r := recover(); r != nil {
+      tx.Rollback()
+      panic(r)
+    }
+  }()
+
   sensorData := &model.SensorData{
     Temperature: temperature,
     Humidity:    humidity,
   }
 
-  return usecase.repository.Save(sensorData)
+  if err := usecase.repository.Save(tx, sensorData); err != nil {
+    tx.Rollback()
+    return err
+  }
+
+  return tx.Commit().Error
 }

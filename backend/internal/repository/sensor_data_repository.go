@@ -6,7 +6,8 @@ import (
 )
 
 tpe SensorDataRepository interface {
-  Save(data *model.SensorData) error
+  BeginTx() *gorm.DB
+  Save(tx *gorm.DB, data *model.SensorData) error
 }
 
 type SensorDataRepository struct {
@@ -17,6 +18,10 @@ func NewSensorDataRepository(db *gorm.DB) SensorDataRepository {
   return &sensorDataRepository{db: db}
 }
 
-func (r *SensorDataRepository) Save(data *model.SensorData) error {
-  return r.db.Create(data).Error
+func (r *SensorDataRepository) BeginTx() *gorm.DB {
+  return r.db.Begin()
+}
+
+func (r *SensorDataRepository) Save(tx *gorm.DB, data *model.SensorData) error {
+  return tx.Create(data).Error
 }
