@@ -1,14 +1,14 @@
 package repository_test
 
 import (
-  "testing"
+	"testing"
 
-  "github.com/stretchr/testify/assert"
-  "gorm.io/driver/sqlite"
-  "gorm.io/gorm"
+	"github.com/stretchr/testify/assert"
+	"gorm.io/driver/sqlite"
+	"gorm.io/gorm"
 
-  "github.com/your-org/device-platform/backend/internal/model"
-  "github.com/your-org/device-platform/backend/internal/repository"
+	"github.com/your-org/device-platform/backend/internal/model"
+	"github.com/your-org/device-platform/backend/internal/repository"
 )
 
 func SetupTestDB(t *testing.T) *gorm.DB {
@@ -72,3 +72,48 @@ func Test_DBError(t *testing.T) {
   _, err = repo.GetAll()
   assert.Error(t, err, "Expected error when accessing non-existent database")
 }
+
+func TestSave(t *testing.T) {
+  db := SetupTestDB(t)
+  repo := SetupRepository(db)
+  tx := repo.BeginTx()
+
+  data := &model.SensorData{
+    Temperature: 24.0,
+    Humidity:    60.0,
+  }
+
+  err := repo.Save(tx, data)
+  assert.NoError(t, err, "Failed to save sensor data")
+
+  err = tx.Commit().Error
+
+  var savedData model.SensorData
+  err = db.First(&savedData, data.ID).Error
+  assert.NoError(t, err, "Failed to retrieve saved sensor data")
+  assert.Equal(t, data.Temperature, savedData.Temperature)
+  assert.Equal(t, data.Humidity, savedData.Humidity)
+}
+
+func TestSave_rollback(t *testing.T) {
+  db := SetupTestDB(t)
+  repo := SetupRepository(db)
+  tx := repo.BeginTx()
+
+  data := &model.SensorData{
+    Temperature: 25.0,
+    Humidity:    65.0,
+  }
+
+  err := repo.Save(tx, data)
+  assert.NoError(t, err, "Failed to save sensor data")
+
+  // Rollback the transaction
+  err = tx.Rollback().Error
+  assert.NoError(t, err, "Failed to rollback transaction")
+
+  var count int64
+  db.Model(&model.SensorData{}).Count(&count)
+  assert.Equal(t, int64(0), count, "Expected no sensor data after rollback")
+}
+
