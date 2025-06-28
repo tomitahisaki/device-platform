@@ -27,15 +27,15 @@ func (controller *SensorDataController) PostSensorData(context *gin.Context) {
 		return
 	}
 
-	if err := controller.usecase.SaveSensorData(request.Temperature, request.Humidity); err != nil {
+	if err := controller.usecase.PostSensorData(request.Temperature, request.Humidity); err != nil {
 		context.JSON(http.StatusInternalServerError, gin.H{"error": "failed to save sensor data"})
 	}
 
 	context.JSON(http.StatusCreated, gin.H{"message": "sensor data saved successfully"})
 }
 
-func (controller *SensorDataController) GetAllSensorData(context *gin.Context) {
-	data, err := controller.usecase.GetAllSensorData()
+func (controller *SensorDataController) GetSensorDataList(context *gin.Context) {
+	data, err := controller.usecase.GetSensorDataList()
 	if err != nil {
 		context.JSON(http.StatusInternalServerError, gin.H{"error": "failed to retrieve sensor data"})
 		return

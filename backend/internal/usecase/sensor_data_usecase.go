@@ -6,8 +6,8 @@ import (
 )
 
 type SensorDataUseCase interface {
-	SaveSensorData(temperature float64, humidity float64) error
-	GetAllSensorData() ([]model.SensorData, error)
+	PostSensorData(temperature float64, humidity float64) error
+	GetSensorDataList() ([]model.SensorData, error)
 }
 
 type sensorDataUseCase struct {
@@ -18,7 +18,7 @@ func NewSensorDataUseCase(repository repository.SensorDataRepository) SensorData
 	return &sensorDataUseCase{repository: repository}
 }
 
-func (usecase *sensorDataUseCase) SaveSensorData(temperature float64, humidity float64) error {
+func (usecase *sensorDataUseCase) PostSensorData(temperature float64, humidity float64) error {
 	tx := usecase.repository.BeginTx()
 
 	defer func() {
@@ -33,7 +33,7 @@ func (usecase *sensorDataUseCase) SaveSensorData(temperature float64, humidity f
 		Humidity:    humidity,
 	}
 
-	if err := usecase.repository.Save(tx, sensorData); err != nil {
+	if err := usecase.repository.Create(tx, sensorData); err != nil {
 		tx.Rollback()
 		return err
 	}
@@ -41,6 +41,6 @@ func (usecase *sensorDataUseCase) SaveSensorData(temperature float64, humidity f
 	return tx.Commit().Error
 }
 
-func (usecase *sensorDataUseCase) GetAllSensorData() ([]model.SensorData, error) {
-	return usecase.repository.GetAll()
+func (usecase *sensorDataUseCase) GetSensorDataList() ([]model.SensorData, error) {
+	return usecase.repository.All()
 }

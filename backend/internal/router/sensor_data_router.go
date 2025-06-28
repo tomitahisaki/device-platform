@@ -16,6 +16,6 @@ func RegisterSensorDataRoutes(r *gin.Engine, db *gorm.DB) {
 	sensorGroup := r.Group("/sensor-data")
 	{
 		sensorGroup.POST("", controller.PostSensorData)
-		sensorGroup.GET("", controller.GetAllSensorData)
+		sensorGroup.GET("", controller.GetSensorDataList)
 	}
 }

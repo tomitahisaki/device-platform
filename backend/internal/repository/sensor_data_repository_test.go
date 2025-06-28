@@ -24,16 +24,16 @@ func SetupRepository(db *gorm.DB) repository.SensorDataRepository {
   return repository.NewSensorDataRepository(db)
 }
 
-func TestGetAll_empty(t *testing.T) {
+func TestAll_empty(t *testing.T) {
   db := SetupTestDB(t)
   repo := SetupRepository(db)
 
-  data, err := repo.GetAll()
+  data, err := repo.All()
   assert.NoError(t, err)
   assert.Empty(t, data, "Expected no sensor data in the database")
 }
 
-func TestGetAll_single(t *testing.T) {
+func TestAll_single(t *testing.T) {
   db := SetupTestDB(t)
   repo := SetupRepository(db)
 
@@ -42,12 +42,12 @@ func TestGetAll_single(t *testing.T) {
     Humidity:    45.0,
   }).Error
 
-  data, err := repo.GetAll()
+  data, err := repo.All()
   assert.NoError(t, err)
   assert.Len(t, data, 1, "Expected one sensor data entry")
 }
 
-func TestGetAll_multiple(t *testing.T) {
+func TestAll_multiple(t *testing.T) {
   db := SetupTestDB(t)
   repo := SetupRepository(db)
 
@@ -56,7 +56,7 @@ func TestGetAll_multiple(t *testing.T) {
     { Temperature: 23.5, Humidity: 55.0},
   }).Error
 
-  data, err := repo.GetAll()
+  data, err := repo.All()
   assert.NoError(t, err)
   assert.Len(t, data, 2, "Expected two sensor data entries")
 }
@@ -69,11 +69,11 @@ func Test_DBError(t *testing.T) {
   assert.NoError(t, err, "Failed to close the database connection")
 
   repo := repository.NewSensorDataRepository(db)
-  _, err = repo.GetAll()
+  _, err = repo.All()
   assert.Error(t, err, "Expected error when accessing non-existent database")
 }
 
-func TestSave(t *testing.T) {
+func TestCreate(t *testing.T) {
   db := SetupTestDB(t)
   repo := SetupRepository(db)
   tx := repo.BeginTx()
@@ -83,7 +83,7 @@ func TestSave(t *testing.T) {
     Humidity:    60.0,
   }
 
-  err := repo.Save(tx, data)
+  err := repo.Create(tx, data)
   assert.NoError(t, err, "Failed to save sensor data")
 
   err = tx.Commit().Error
@@ -95,7 +95,7 @@ func TestSave(t *testing.T) {
   assert.Equal(t, data.Humidity, savedData.Humidity)
 }
 
-func TestSave_rollback(t *testing.T) {
+func TestCreate_rollback(t *testing.T) {
   db := SetupTestDB(t)
   repo := SetupRepository(db)
   tx := repo.BeginTx()
@@ -105,7 +105,7 @@ func TestSave_rollback(t *testing.T) {
     Humidity:    65.0,
   }
 
-  err := repo.Save(tx, data)
+  err := repo.Create(tx, data)
   assert.NoError(t, err, "Failed to save sensor data")
 
   // Rollback the transaction
