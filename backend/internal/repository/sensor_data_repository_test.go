@@ -76,44 +76,19 @@ func Test_DBError(t *testing.T) {
 func TestCreate(t *testing.T) {
   db := SetupTestDB(t)
   repo := SetupRepository(db)
-  tx := repo.BeginTx()
 
   data := &model.SensorData{
     Temperature: 24.0,
     Humidity:    60.0,
   }
 
-  err := repo.Create(tx, data)
+  err := repo.Create(data)
   assert.NoError(t, err, "Failed to save sensor data")
-
-  err = tx.Commit().Error
 
   var savedData model.SensorData
   err = db.First(&savedData, data.ID).Error
   assert.NoError(t, err, "Failed to retrieve saved sensor data")
   assert.Equal(t, data.Temperature, savedData.Temperature)
   assert.Equal(t, data.Humidity, savedData.Humidity)
-}
-
-func TestCreate_rollback(t *testing.T) {
-  db := SetupTestDB(t)
-  repo := SetupRepository(db)
-  tx := repo.BeginTx()
-
-  data := &model.SensorData{
-    Temperature: 25.0,
-    Humidity:    65.0,
-  }
-
-  err := repo.Create(tx, data)
-  assert.NoError(t, err, "Failed to save sensor data")
-
-  // Rollback the transaction
-  err = tx.Rollback().Error
-  assert.NoError(t, err, "Failed to rollback transaction")
-
-  var count int64
-  db.Model(&model.SensorData{}).Count(&count)
-  assert.Equal(t, int64(0), count, "Expected no sensor data after rollback")
 }
 
