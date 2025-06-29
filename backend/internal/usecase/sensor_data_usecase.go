@@ -1,25 +1,34 @@
 package usecase
 
 import (
+	"gorm.io/gorm"
+
 	"github.com/your-org/device-platform/backend/internal/model"
 	"github.com/your-org/device-platform/backend/internal/repository"
 )
 
 type SensorDataUseCase interface {
-	SaveSensorData(temperature float64, humidity float64) error
-	GetAllSensorData() ([]model.SensorData, error)
+	PostSensorData(temperature float64, humidity float64) error
+	GetSensorDataList() ([]model.SensorData, error)
 }
 
 type sensorDataUseCase struct {
+	db         *gorm.DB
 	repository repository.SensorDataRepository
 }
 
-func NewSensorDataUseCase(repository repository.SensorDataRepository) SensorDataUseCase {
-	return &sensorDataUseCase{repository: repository}
+func NewSensorDataUseCase(db *gorm.DB, repository repository.SensorDataRepository) SensorDataUseCase {
+	return &sensorDataUseCase{
+		db:         db,
+		repository: repository,
+	}
 }
 
-func (usecase *sensorDataUseCase) SaveSensorData(temperature float64, humidity float64) error {
-	tx := usecase.repository.BeginTx()
+func (usecase *sensorDataUseCase) PostSensorData(temperature float64, humidity float64) error {
+	tx := usecase.db.Begin()
+	if tx.Error != nil {
+		return tx.Error
+	}
 
 	defer func() {
 		if r := recover(); r != nil {
@@ -33,7 +42,7 @@ func (usecase *sensorDataUseCase) SaveSensorData(temperature float64, humidity f
 		Humidity:    humidity,
 	}
 
-	if err := usecase.repository.Save(tx, sensorData); err != nil {
+	if err := usecase.repository.Create(tx, sensorData); err != nil {
 		tx.Rollback()
 		return err
 	}
@@ -41,6 +50,6 @@ func (usecase *sensorDataUseCase) SaveSensorData(temperature float64, humidity f
 	return tx.Commit().Error
 }
 
-func (usecase *sensorDataUseCase) GetAllSensorData() ([]model.SensorData, error) {
-	return usecase.repository.GetAll()
+func (usecase *sensorDataUseCase) GetSensorDataList() ([]model.SensorData, error) {
+	return usecase.repository.All()
 }

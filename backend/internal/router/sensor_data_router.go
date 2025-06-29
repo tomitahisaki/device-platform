@@ -10,12 +10,12 @@ import (
 
 func RegisterSensorDataRoutes(r *gin.Engine, db *gorm.DB) {
 	repository := repository.NewSensorDataRepository(db)
-	usecase := usecase.NewSensorDataUseCase(repository)
+	usecase := usecase.NewSensorDataUseCase(db, repository)
 	controller := controller.NewSensorDataController(usecase)
 
 	sensorGroup := r.Group("/sensor-data")
 	{
 		sensorGroup.POST("", controller.PostSensorData)
-		sensorGroup.GET("", controller.GetAllSensorData)
+		sensorGroup.GET("", controller.GetSensorDataList)
 	}
 }
