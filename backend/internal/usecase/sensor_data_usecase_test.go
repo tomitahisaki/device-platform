@@ -1,8 +1,8 @@
 package usecase_test
 
 import (
+	"errors"
 	"testing"
-  "errors"
 
 	"github.com/stretchr/testify/assert"
 	"gorm.io/driver/sqlite"
@@ -14,57 +14,57 @@ import (
 )
 
 type MockRepo struct {
-  repository.SensorDataRepository
+	repository.SensorDataRepository
 }
 
 func (m *MockRepo) Create(tx *gorm.DB, data *model.SensorData) error {
-  return errors.New("mock create error")
+	return errors.New("mock create error")
 }
 
 func SetupSensorDataUseCase(t *testing.T) (usecase.SensorDataUseCase, *gorm.DB, repository.SensorDataRepository) {
-  db, err := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
-  assert.NoError(t, err)
+	db, err := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
+	assert.NoError(t, err)
 
-  err = db.AutoMigrate(&model.SensorData{})
+	err = db.AutoMigrate(&model.SensorData{})
 
-  repo := repository.NewSensorDataRepository(db)
-  usecase := usecase.NewSensorDataUseCase(db, repo)
-  return usecase, db, repo
+	repo := repository.NewSensorDataRepository(db)
+	usecase := usecase.NewSensorDataUseCase(db, repo)
+	return usecase, db, repo
 }
 
 func TestGetSendDataList(t *testing.T) {
-  usecase, db, _ := SetupSensorDataUseCase(t)
+	usecase, db, _ := SetupSensorDataUseCase(t)
 
-  err := db.Create([]*model.SensorData{
-    { Temperature: 22.5, Humidity: 45.0 },
-    { Temperature: 23.0, Humidity: 50.0 },
-  }).Error
+	err := db.Create([]*model.SensorData{
+		{Temperature: 22.5, Humidity: 45.0},
+		{Temperature: 23.0, Humidity: 50.0},
+	}).Error
 
-  result, err := usecase.GetSensorDataList()
-  assert.NoError(t, err)
-  assert.Len(t, result, 2)
+	result, err := usecase.GetSensorDataList()
+	assert.NoError(t, err)
+	assert.Len(t, result, 2)
 }
 
 func TestPostSensorData(t *testing.T) {
-  usecase, db, _ := SetupSensorDataUseCase(t)
-  
-  err := usecase.PostSensorData(24.0, 55.0)
-  assert.NoError(t, err, "error posting sensor data")
+	usecase, db, _ := SetupSensorDataUseCase(t)
 
-  var result []model.SensorData
-  err = db.Find(&result).Error
-  assert.NoError(t, err, "Failed to retrieve sensor data from the database")
-  assert.Len(t, result, 1, "Expected one sensor data entry")
-  assert.Equal(t, 24.0, result[0].Temperature, "Temperature should match")
-  assert.Equal(t, 55.0, result[0].Humidity, "Humidity should match")
+	err := usecase.PostSensorData(24.0, 55.0)
+	assert.NoError(t, err, "error posting sensor data")
+
+	var result []model.SensorData
+	err = db.Find(&result).Error
+	assert.NoError(t, err, "Failed to retrieve sensor data from the database")
+	assert.Len(t, result, 1, "Expected one sensor data entry")
+	assert.Equal(t, 24.0, result[0].Temperature, "Temperature should match")
+	assert.Equal(t, 55.0, result[0].Humidity, "Humidity should match")
 }
 
 func TestPostSensorData_CreateFailed(t *testing.T) {
-  db, _ := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
-  mockRepo := &MockRepo{}
-  usecase := usecase.NewSensorDataUseCase(db, mockRepo)
+	db, _ := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
+	mockRepo := &MockRepo{}
+	usecase := usecase.NewSensorDataUseCase(db, mockRepo)
 
-  err := usecase.PostSensorData(24.0, 55.0)
-  assert.Error(t, err, "Expected error when creating sensor data")
-  assert.Equal(t, "mock create error", err.Error(), "Error message should match mock error")
+	err := usecase.PostSensorData(24.0, 55.0)
+	assert.Error(t, err, "Expected error when creating sensor data")
+	assert.Equal(t, "mock create error", err.Error(), "Error message should match mock error")
 }

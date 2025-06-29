@@ -1,7 +1,7 @@
 package usecase
 
 import (
-  "gorm.io/gorm"
+	"gorm.io/gorm"
 
 	"github.com/your-org/device-platform/backend/internal/model"
 	"github.com/your-org/device-platform/backend/internal/repository"
@@ -13,39 +13,39 @@ type SensorDataUseCase interface {
 }
 
 type sensorDataUseCase struct {
-  db *gorm.DB
+	db         *gorm.DB
 	repository repository.SensorDataRepository
 }
 
 func NewSensorDataUseCase(db *gorm.DB, repository repository.SensorDataRepository) SensorDataUseCase {
 	return &sensorDataUseCase{
-    db: db,
-    repository: repository,
-  }
+		db:         db,
+		repository: repository,
+	}
 }
 
 func (usecase *sensorDataUseCase) PostSensorData(temperature float64, humidity float64) error {
-  tx := usecase.db.Begin()
-  if tx.Error != nil {
-    return tx.Error
-  }
+	tx := usecase.db.Begin()
+	if tx.Error != nil {
+		return tx.Error
+	}
 
-  defer func() {
-    if r := recover(); r != nil {
-      tx.Rollback()
-      panic(r)
-    }
-  }()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+			panic(r)
+		}
+	}()
 
 	sensorData := &model.SensorData{
 		Temperature: temperature,
 		Humidity:    humidity,
 	}
 
-  if err := usecase.repository.Create(tx, sensorData); err != nil {
-    tx.Rollback()
-    return err
-  }
+	if err := usecase.repository.Create(tx, sensorData); err != nil {
+		tx.Rollback()
+		return err
+	}
 
 	return tx.Commit().Error
 }

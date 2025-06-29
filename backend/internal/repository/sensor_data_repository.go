@@ -19,7 +19,7 @@ func NewSensorDataRepository(db *gorm.DB) SensorDataRepository {
 }
 
 func (r *sensorDataRepository) Create(tx *gorm.DB, data *model.SensorData) error {
-  return tx.Create(data).Error
+	return tx.Create(data).Error
 }
 
 func (r *sensorDataRepository) All() ([]model.SensorData, error) {

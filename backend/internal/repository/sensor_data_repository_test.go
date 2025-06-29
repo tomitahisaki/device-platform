@@ -12,83 +12,82 @@ import (
 )
 
 func SetupTestDB(t *testing.T) *gorm.DB {
-  db, err := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
-  assert.NoError(t, err)
+	db, err := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
+	assert.NoError(t, err)
 
-  err = db.AutoMigrate(&model.SensorData{})
-  assert.NoError(t, err)
-  return db
+	err = db.AutoMigrate(&model.SensorData{})
+	assert.NoError(t, err)
+	return db
 }
 
 func SetupRepository(db *gorm.DB) repository.SensorDataRepository {
-  return repository.NewSensorDataRepository(db)
+	return repository.NewSensorDataRepository(db)
 }
 
 func TestAll_empty(t *testing.T) {
-  db := SetupTestDB(t)
-  repo := SetupRepository(db)
+	db := SetupTestDB(t)
+	repo := SetupRepository(db)
 
-  data, err := repo.All()
-  assert.NoError(t, err)
-  assert.Empty(t, data, "Expected no sensor data in the database")
+	data, err := repo.All()
+	assert.NoError(t, err)
+	assert.Empty(t, data, "Expected no sensor data in the database")
 }
 
 func TestAll_single(t *testing.T) {
-  db := SetupTestDB(t)
-  repo := SetupRepository(db)
+	db := SetupTestDB(t)
+	repo := SetupRepository(db)
 
-  err := db.Create(&model.SensorData{
-    Temperature: 21.5,
-    Humidity:    45.0,
-  }).Error
+	err := db.Create(&model.SensorData{
+		Temperature: 21.5,
+		Humidity:    45.0,
+	}).Error
 
-  data, err := repo.All()
-  assert.NoError(t, err)
-  assert.Len(t, data, 1, "Expected one sensor data entry")
+	data, err := repo.All()
+	assert.NoError(t, err)
+	assert.Len(t, data, 1, "Expected one sensor data entry")
 }
 
 func TestAll_multiple(t *testing.T) {
-  db := SetupTestDB(t)
-  repo := SetupRepository(db)
+	db := SetupTestDB(t)
+	repo := SetupRepository(db)
 
-  err := db.Create([]*model.SensorData{
-    { Temperature: 22.0, Humidity: 50.0 },
-    { Temperature: 23.5, Humidity: 55.0},
-  }).Error
+	err := db.Create([]*model.SensorData{
+		{Temperature: 22.0, Humidity: 50.0},
+		{Temperature: 23.5, Humidity: 55.0},
+	}).Error
 
-  data, err := repo.All()
-  assert.NoError(t, err)
-  assert.Len(t, data, 2, "Expected two sensor data entries")
+	data, err := repo.All()
+	assert.NoError(t, err)
+	assert.Len(t, data, 2, "Expected two sensor data entries")
 }
 
 func Test_DBError(t *testing.T) {
-  db := SetupTestDB(t)
-  sqlDB, err := db.DB()
+	db := SetupTestDB(t)
+	sqlDB, err := db.DB()
 
-  err = sqlDB.Close()
-  assert.NoError(t, err, "Failed to close the database connection")
+	err = sqlDB.Close()
+	assert.NoError(t, err, "Failed to close the database connection")
 
-  repo := repository.NewSensorDataRepository(db)
-  _, err = repo.All()
-  assert.Error(t, err, "Expected error when accessing non-existent database")
+	repo := repository.NewSensorDataRepository(db)
+	_, err = repo.All()
+	assert.Error(t, err, "Expected error when accessing non-existent database")
 }
 
 func TestCreate(t *testing.T) {
-  db := SetupTestDB(t)
-  repo := SetupRepository(db)
+	db := SetupTestDB(t)
+	repo := SetupRepository(db)
 
-  data := &model.SensorData{
-    Temperature: 24.0,
-    Humidity:    60.0,
-  }
+	data := &model.SensorData{
+		Temperature: 24.0,
+		Humidity:    60.0,
+	}
 
-  err := repo.Create(db, data)
-  assert.NoError(t, err, "Failed to save sensor data")
+	err := repo.Create(db, data)
+	assert.NoError(t, err, "Failed to save sensor data")
 
-  var savedData model.SensorData
-  err = db.First(&savedData, data.ID).Error
-  assert.NoError(t, err, "Failed to retrieve saved sensor data")
-  assert.Equal(t, data.Temperature, savedData.Temperature)
-  assert.Equal(t, data.Humidity, savedData.Humidity)
+	var savedData model.SensorData
+	err = db.First(&savedData, data.ID).Error
+	assert.NoError(t, err, "Failed to retrieve saved sensor data")
+	assert.Equal(t, data.Temperature, savedData.Temperature)
+	assert.Equal(t, data.Humidity, savedData.Humidity)
 }
-
