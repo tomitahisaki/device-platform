@@ -26,6 +26,7 @@ func SetupSensorDataUseCase(t *testing.T) (usecase.SensorDataUseCase, *gorm.DB, 
 	assert.NoError(t, err)
 
 	err = db.AutoMigrate(&model.SensorData{})
+	assert.NoError(t, err, "Failed to auto migrate SensorData model")
 
 	repo := repository.NewSensorDataRepository(db)
 	usecase := usecase.NewSensorDataUseCase(db, repo)
@@ -39,6 +40,7 @@ func TestGetSendDataList(t *testing.T) {
 		{Temperature: 22.5, Humidity: 45.0},
 		{Temperature: 23.0, Humidity: 50.0},
 	}).Error
+	assert.NoError(t, err, "Failed to create sensor data")
 
 	result, err := usecase.GetSensorDataList()
 	assert.NoError(t, err)

@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 
@@ -16,7 +17,7 @@ func SetupTestDB(t *testing.T) *gorm.DB {
 	assert.NoError(t, err)
 
 	err = db.AutoMigrate(&model.SensorData{})
-	assert.NoError(t, err)
+	require.NoError(t, err, "Failed to auto migrate SensorData model")
 	return db
 }
 
@@ -41,6 +42,7 @@ func TestAll_single(t *testing.T) {
 		Temperature: 21.5,
 		Humidity:    45.0,
 	}).Error
+	assert.NoError(t, err, "Failed to create sensor data")
 
 	data, err := repo.All()
 	assert.NoError(t, err)
@@ -55,6 +57,7 @@ func TestAll_multiple(t *testing.T) {
 		{Temperature: 22.0, Humidity: 50.0},
 		{Temperature: 23.5, Humidity: 55.0},
 	}).Error
+	assert.NoError(t, err, "Failed to create multiple sensor data entries")
 
 	data, err := repo.All()
 	assert.NoError(t, err)
@@ -63,9 +66,9 @@ func TestAll_multiple(t *testing.T) {
 
 func Test_DBError(t *testing.T) {
 	db := SetupTestDB(t)
-	sqlDB, err := db.DB()
+	sqlDB, _ := db.DB()
 
-	err = sqlDB.Close()
+	err := sqlDB.Close()
 	assert.NoError(t, err, "Failed to close the database connection")
 
 	repo := repository.NewSensorDataRepository(db)
