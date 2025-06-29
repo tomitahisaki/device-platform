@@ -42,7 +42,7 @@ func (usecase *sensorDataUseCase) PostSensorData(temperature float64, humidity f
 		Humidity:    humidity,
 	}
 
-  if err := usecase.repository.Create(tx, xensorData).Error; err != nil {
+  if err := usecase.repository.Create(tx, sensorData); err != nil {
     tx.Rollback()
     return err
   }

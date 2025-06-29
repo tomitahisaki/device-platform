@@ -6,7 +6,7 @@ import (
 )
 
 type SensorDataRepository interface {
-	Create(data *model.SensorData) error
+	Create(tx *gorm.DB, data *model.SensorData) error
 	All() ([]model.SensorData, error)
 }
 

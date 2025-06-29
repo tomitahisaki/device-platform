@@ -82,7 +82,7 @@ func TestCreate(t *testing.T) {
     Humidity:    60.0,
   }
 
-  err := repo.Create(data)
+  err := repo.Create(db, data)
   assert.NoError(t, err, "Failed to save sensor data")
 
   var savedData model.SensorData
