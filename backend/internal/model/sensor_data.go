@@ -1,8 +1,9 @@
 package model
 
 import (
-  "gorm.io/gorm"
-  "errors"
+	"errors"
+
+	"gorm.io/gorm"
 )
 
 type SensorData struct {
@@ -12,11 +13,11 @@ type SensorData struct {
 }
 
 func ValidateSensorData(sensorData *SensorData) error {
-  if sensorData.Temperature < -100 || sensorData.Temperature > 100 {
-    return errors.New("temperature out of range")
-  }
-  if sensorData.Humidity < 0 || sensorData.Humidity > 100 {
-    return errors.New("humidity out of range")
-  }
-  return nil
+	if sensorData.Temperature < -100 || sensorData.Temperature > 100 {
+		return errors.New("temperature out of range")
+	}
+	if sensorData.Humidity < 0 || sensorData.Humidity > 100 {
+		return errors.New("humidity out of range")
+	}
+	return nil
 }
