@@ -42,6 +42,11 @@ func (usecase *sensorDataUseCase) PostSensorData(temperature float64, humidity f
 		Humidity:    humidity,
 	}
 
+	if err := model.ValidateSensorData(sensorData); err != nil {
+		tx.Rollback()
+		return err
+	}
+
 	if err := usecase.repository.Create(tx, sensorData); err != nil {
 		tx.Rollback()
 		return err

@@ -70,3 +70,29 @@ func TestPostSensorData_CreateFailed(t *testing.T) {
 	assert.Error(t, err, "Expected error when creating sensor data")
 	assert.Equal(t, "mock create error", err.Error(), "Error message should match mock error")
 }
+
+func TestPostSensorData_ValidationError(t *testing.T) {
+	usecase, db, _ := SetupSensorDataUseCase(t)
+
+	t.Run("temperature too low", func(t *testing.T) {
+		err := usecase.PostSensorData(-150.0, 50.0)
+		assert.Error(t, err)
+		assert.EqualError(t, err, "temperature out of range")
+
+		var result []model.SensorData
+		err = db.Find(&result).Error
+		assert.NoError(t, err)
+		assert.Len(t, result, 0, "データが保存されてはいけない")
+	})
+
+	t.Run("humidity too high", func(t *testing.T) {
+		err := usecase.PostSensorData(25.0, 150.0)
+		assert.Error(t, err)
+		assert.EqualError(t, err, "humidity out of range")
+
+		var result []model.SensorData
+		err = db.Find(&result).Error
+		assert.NoError(t, err)
+		assert.Len(t, result, 0, "データが保存されてはいけない")
+	})
+}
