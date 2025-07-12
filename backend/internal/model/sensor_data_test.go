@@ -21,23 +21,28 @@ func TestValidateSensorData(t *testing.T) {
 		{
 			name:        "temperature too low",
 			input:       &SensorData{Temperature: -150, Humidity: 50},
-			expectedErr: "temperature out of range",
+      expectedErr: "Temperature: temperature out of range",
 		},
 		{
 			name:        "temperature too high",
 			input:       &SensorData{Temperature: 150, Humidity: 50},
-			expectedErr: "temperature out of range",
+      expectedErr: "Temperature: temperature out of range",
 		},
 		{
 			name:        "humidity too low",
 			input:       &SensorData{Temperature: 25, Humidity: -10},
-			expectedErr: "humidity out of range",
+      expectedErr: "Humidity: humidity out of range",
 		},
 		{
 			name:        "humidity too high",
 			input:       &SensorData{Temperature: 25, Humidity: 150},
-			expectedErr: "humidity out of range",
+      expectedErr: "Humidity: humidity out of range",
 		},
+    { 
+      name:        "both values out of range",
+      input:       &SensorData{Temperature: -150, Humidity: 150},
+      expectedErr: "Temperature: temperature out of range; Humidity: humidity out of range",
+    },
 	}
 
 	for _, tt := range tests {

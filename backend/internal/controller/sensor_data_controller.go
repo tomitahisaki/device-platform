@@ -27,8 +27,16 @@ func (controller *SensorDataController) PostSensorData(context *gin.Context) {
 		return
 	}
 
-	if err := controller.usecase.PostSensorData(request.Temperature, request.Humidity); err != nil {
+  err := controller.usecase.PostSensorData(request.Temperature, request.Humidity)
+	if validationErrs, ok := err.(model.ValidationErrors); ok {
+		// ✅ バリデーションエラー（422）
+		context.JSON(422, gin.H{"errors": validationErrs})
+		return
+	}
+	if err != nil {
+		// ✅ その他のエラー（500）
 		context.JSON(http.StatusInternalServerError, gin.H{"error": "failed to save sensor data"})
+		return
 	}
 
 	context.JSON(http.StatusCreated, gin.H{"message": "sensor data saved successfully"})
