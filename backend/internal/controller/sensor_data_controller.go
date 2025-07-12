@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/your-org/device-platform/backend/internal/model"
 	"github.com/your-org/device-platform/backend/internal/usecase"
 )
 
@@ -27,7 +28,7 @@ func (controller *SensorDataController) PostSensorData(context *gin.Context) {
 		return
 	}
 
-  err := controller.usecase.PostSensorData(request.Temperature, request.Humidity)
+	err := controller.usecase.PostSensorData(request.Temperature, request.Humidity)
 	if validationErrs, ok := err.(model.ValidationErrors); ok {
 		// ✅ バリデーションエラー（422）
 		context.JSON(422, gin.H{"errors": validationErrs})

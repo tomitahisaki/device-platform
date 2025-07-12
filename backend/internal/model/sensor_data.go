@@ -13,18 +13,18 @@ type SensorData struct {
 }
 
 func (ve ValidationErrors) Error() string {
-  errMsg := ""
-  for field, msg := range ve {
-    if errMsg != "" {
-      errMsg += "; "
-    }
-    errMsg += field + ": " + msg
-  }
-  return errMsg
+	errMsg := ""
+	for field, msg := range ve {
+		if errMsg != "" {
+			errMsg += "; "
+		}
+		errMsg += field + ": " + msg
+	}
+	return errMsg
 }
 
 func ValidateSensorData(sensorData *SensorData) error {
-  errs := ValidationErrors{}
+	errs := ValidationErrors{}
 
 	if sensorData.Temperature < -100 || sensorData.Temperature > 100 {
 		errs["Temperature"] = "temperature out of range"
@@ -33,8 +33,8 @@ func ValidateSensorData(sensorData *SensorData) error {
 		errs["Humidity"] = "humidity out of range"
 	}
 
-  if len(errs) > 0 {
-    return errs
-  }
+	if len(errs) > 0 {
+		return errs
+	}
 	return nil
 }
