@@ -16,6 +16,28 @@ services:
       - backend_net
     command: ["air"]
 
+  frontend:
+    # make sure to use platform arm64
+    platform: linux/arm64
+    build:
+      context: ./frontend
+    container_name: raspi_frontend
+    volumes:
+      - ./frontend:/app:cached
+      # /app/node_modules はホストと分離されたコンテナ専用の node_modules を維持するために必要
+      # ただし、一度ビルドした古い node_modules がこの volume に残っていると、
+      # Dockerfile で更新された依存が反映されず、古いバージョンが使われる可能性がある
+      # ⇒ 必要に応じて `docker compose down -v` で volume を削除すること
+      - /app/node_modules
+    working_dir: /app
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+    networks:
+      - backend_net
+    command: npm run dev -- --host
+
   db:
     image: postgres:15-alpine
     container_name: raspi_db
@@ -37,8 +59,7 @@ services:
     depends_on:
       - db
     networks:
-    - backend_net
-
+      - backend_net
 
 volumes:
   pgdata:
