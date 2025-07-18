@@ -4,7 +4,7 @@ FROM --platform=linux/arm64 node:20
 WORKDIR /app
 
 # キャッシュを効かせるため、依存ファイルだけ先にコピー
-COPY package.json package-lock.json ./
+COPY package.json ./
 
 # ここでLinux/ARM64向けにネイティブバイナリが入る
 RUN npm install
