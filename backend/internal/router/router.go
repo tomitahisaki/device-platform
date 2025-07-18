@@ -7,7 +7,9 @@ import (
 
 func SetupRouter(db *gorm.DB) *gin.Engine {
 	r := gin.Default()
-	RegisterSensorDataRoutes(r, db)
+	v1 := r.Group("/api/v1")
+
+	RegisterSensorDataRoutes(v1, db)
 
 	return r
 }
