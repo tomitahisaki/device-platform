@@ -1,29 +1,70 @@
+import { 
+  AppBar, 
+  Toolbar, 
+  Typography, 
+  Container, 
+  Box, 
+  Button,
+  Paper
+} from '@mui/material';
 import { Outlet, Link } from 'react-router-dom';
 import { ROUTES } from '../router/constants';
-import './Layout.css';
 
 export default function Layout() {
   return (
-    <div className="layout">
-      <header className="header">
-        <div className="header-content">
-          <h1 className="app-title">
-            <Link to={ROUTES.HOME} className="title-link">Device Platform</Link>
-          </h1>
-          <nav className="nav">
-            <Link to={ROUTES.HOME_ALT} className="nav-link">ホーム</Link>
-            <Link to={ROUTES.SENSOR_DATA} className="nav-link">温湿度データ</Link>
-          </nav>
-        </div>
-      </header>
+    <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+      <AppBar position="static">
+        <Toolbar>
+          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+            <Link 
+              to={ROUTES.HOME} 
+              style={{ 
+                color: 'inherit', 
+                textDecoration: 'none' 
+              }}
+            >
+              Device Platform
+            </Link>
+          </Typography>
+          <Box sx={{ display: 'flex', gap: 2 }}>
+            <Button 
+              color="inherit" 
+              component={Link} 
+              to={ROUTES.HOME_ALT}
+              sx={{ textTransform: 'none' }}
+            >
+              ホーム
+            </Button>
+            <Button 
+              color="inherit" 
+              component={Link} 
+              to={ROUTES.SENSOR_DATA}
+              sx={{ textTransform: 'none' }}
+            >
+              温湿度データ
+            </Button>
+          </Box>
+        </Toolbar>
+      </AppBar>
       
-      <main className="main-content">
+      <Container maxWidth="lg" sx={{ mt: 4, mb: 4, flexGrow: 1 }}>
         <Outlet />
-      </main>
+      </Container>
       
-      <footer className="footer">
-        <p>&copy; 2025 Device Platform</p>
-      </footer>
-    </div>
+      <Paper 
+        component="footer" 
+        sx={{ 
+          mt: 'auto', 
+          py: 2, 
+          textAlign: 'center',
+          backgroundColor: 'primary.main',
+          color: 'primary.contrastText'
+        }}
+      >
+        <Typography variant="body2">
+          &copy; 2025 Device Platform
+        </Typography>
+      </Paper>
+    </Box>
   );
 }
