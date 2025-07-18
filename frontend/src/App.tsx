@@ -1,5 +1,5 @@
 import { BrowserRouter as Router, useRoutes } from 'react-router-dom'
-import { MuiThemeProvider } from './theme/theme'
+import { MuiThemeProvider } from './shared/theme/theme'
 import { routes } from './router/routes'
 import './App.css'
 
