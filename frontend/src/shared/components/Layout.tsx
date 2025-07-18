@@ -3,12 +3,12 @@ import {
   Toolbar, 
   Typography, 
   Container, 
+  Button, 
   Box, 
-  Button,
-  Paper
+  Paper 
 } from '@mui/material';
 import { Outlet, Link } from 'react-router-dom';
-import { ROUTES } from '../router/constants';
+import { ROUTES } from '../constants/routes';
 
 export default function Layout() {
   return (

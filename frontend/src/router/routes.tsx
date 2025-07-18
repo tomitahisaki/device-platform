@@ -1,25 +1,25 @@
 import { RouteObject } from 'react-router-dom';
-import LayoutMui from '../components/LayoutMui';
-import HomeMui from '../pages/HomeMui';
-import SensorListMui from '../pages/SensorListMui';
+import Layout from '../shared/components/Layout';
+import { HomePage } from '../features/home';
+import { SensorDataPage } from '../features/sensor-data';
 
 // ルートの定義
 export const routes: RouteObject[] = [
   {
     path: '/',
-    element: <LayoutMui />,
+    element: <Layout />,
     children: [
       {
         index: true, // ルートパス (/) にマッチ
-        element: <HomeMui />,
+        element: <HomePage />,
       },
       {
         path: 'home',
-        element: <HomeMui />,
+        element: <HomePage />,
       },
       {
         path: 'sensor-data',
-        element: <SensorListMui />,
+        element: <SensorDataPage />,
       },
     ],
   },
@@ -29,10 +29,10 @@ export const routes: RouteObject[] = [
 export const routeConfig = {
   home: {
     path: '/home',
-    element: <HomeMui />,
+    element: <HomePage />,
   },
   sensorData: {
     path: '/sensor-data',
-    element: <SensorListMui />,
+    element: <SensorDataPage />,
   },
 } as const;
