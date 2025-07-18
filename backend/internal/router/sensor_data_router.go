@@ -8,7 +8,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func RegisterSensorDataRoutes(r *gin.Engine, db *gorm.DB) {
+func RegisterSensorDataRoutes(r *gin.RouterGroup, db *gorm.DB) {
 	repository := repository.NewSensorDataRepository(db)
 	usecase := usecase.NewSensorDataUseCase(db, repository)
 	controller := controller.NewSensorDataController(usecase)
