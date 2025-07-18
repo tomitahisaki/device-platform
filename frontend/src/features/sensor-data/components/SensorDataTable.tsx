@@ -15,7 +15,7 @@ import {
   WaterDrop as HumidityIcon 
 } from '@mui/icons-material';
 
-import { SensorData } from '../../../shared/types/sensor';
+import { SensorData } from '../types/sensor';
 
 interface SensorDataTableProps {
   sensorData: SensorData[];

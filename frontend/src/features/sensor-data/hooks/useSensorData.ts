@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { SensorData } from '../../../shared/types/sensor';
+import { SensorData } from '../types/sensor';
 
 export function useSensorData() {
   const [sensorData, setSensorData] = useState<SensorData[]>([]);
