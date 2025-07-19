@@ -1,5 +1,5 @@
 import { Card, CardContent, Typography } from '@mui/material';
-import { FeatureCardProps } from '../types';
+import type { FeatureCardProps } from '../types';
 
 export function FeatureCard({
 	icon,

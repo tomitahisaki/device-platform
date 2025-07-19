@@ -1,4 +1,4 @@
-import { RouteObject } from 'react-router-dom';
+import type { RouteObject } from 'react-router-dom';
 import Layout from '../shared/components/Layout';
 import { HomePage } from '../features/home';
 import { SensorDataPage } from '../features/sensor-data';

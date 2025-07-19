@@ -1,4 +1,4 @@
-import { HomeFeatureConfig } from '../types';
+import type { HomeFeatureConfig } from '../types';
 import { ROUTES } from '../../../shared/constants/routes';
 
 export function useHomeConfig(): HomeFeatureConfig {

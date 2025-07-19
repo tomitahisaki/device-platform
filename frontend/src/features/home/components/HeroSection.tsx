@@ -1,6 +1,6 @@
 import { Paper, Typography, Button, Container } from '@mui/material';
 import { Link } from 'react-router-dom';
-import { HomeFeatureConfig } from '../types';
+import type { HomeFeatureConfig } from '../types';
 
 interface HeroSectionProps {
 	config: HomeFeatureConfig;
