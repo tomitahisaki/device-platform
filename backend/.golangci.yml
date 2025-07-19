@@ -1,4 +1,4 @@
-version: 2
+version: "2"
 
 formatters:
   enable:
@@ -24,10 +24,6 @@ linters:
 
 run:
   tests: true
-
-issues:
-  exclude-use-default: false
-
 # 任意で除外設定
 # skip-dirs:
 #   - mocks
