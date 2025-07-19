@@ -20,4 +20,4 @@ jobs:
         with:
           version: v2.1.0
           working-directory: backend
-          args: --timeout 5m
+          args: --output.format=colored-line-number --timeout=5m
