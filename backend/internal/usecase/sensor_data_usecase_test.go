@@ -77,7 +77,7 @@ func TestPostSensorData_ValidationError(t *testing.T) {
 	t.Run("temperature too low", func(t *testing.T) {
 		err := usecase.PostSensorData(-150.0, 50.0)
 		assert.Error(t, err)
-		assert.EqualError(t, err, "temperature out of range")
+		assert.EqualError(t, err, "Temperature: temperature out of range")
 
 		var result []model.SensorData
 		err = db.Find(&result).Error
@@ -88,7 +88,7 @@ func TestPostSensorData_ValidationError(t *testing.T) {
 	t.Run("humidity too high", func(t *testing.T) {
 		err := usecase.PostSensorData(25.0, 150.0)
 		assert.Error(t, err)
-		assert.EqualError(t, err, "humidity out of range")
+		assert.EqualError(t, err, "Humidity: humidity out of range")
 
 		var result []model.SensorData
 		err = db.Find(&result).Error
