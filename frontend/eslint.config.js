@@ -3,6 +3,8 @@ import reactHooks from 'eslint-plugin-react-hooks';
 import reactRefresh from 'eslint-plugin-react-refresh';
 import { globalIgnores } from 'eslint/config';
 
+// mainly use biome for formatting
+// biome is not compatible with eslint, so we use eslint for linting only
 export default tseslint.configs([
 	globalIgnores(['dist']),
 	{
