@@ -1,10 +1,16 @@
-name: Go CI
+name: Backend CI
 
 on:
   push:
     branches: [main]
+    paths:
+      - "backend/**"
+      - ".github/workflows/ci.yml" # Only run on changes to backend or CI config
   pull_request:
     branches: [main]
+    paths:
+      - "backend/**"
+      - ".github/workflows/ci.yml" # Only run on changes to backend or CI config
 
 jobs:
   lint:
