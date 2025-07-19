@@ -1,9 +1,4 @@
-import {
-	Card,
-	CardContent,
-	CardActions,
-	Typography,
-} from '@mui/material';
+import { Card, CardContent, CardActions, Typography } from '@mui/material';
 import type { ReactNode } from 'react';
 
 interface CommonCardProps {

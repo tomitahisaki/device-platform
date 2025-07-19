@@ -1,11 +1,7 @@
 import { Card, CardContent, Typography } from '@mui/material';
 import type { FeatureCardProps } from '../types';
 
-export function FeatureCard({
-	icon,
-	title,
-	description,
-}: FeatureCardProps) {
+export function FeatureCard({ icon, title, description }: FeatureCardProps) {
 	return (
 		<Card
 			elevation={2}

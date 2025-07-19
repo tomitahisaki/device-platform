@@ -1,15 +1,28 @@
 import tseslint from '@typescript-eslint/eslint-plugin';
+import tsparser from '@typescript-eslint/parser';
 import reactHooks from 'eslint-plugin-react-hooks';
 import reactRefresh from 'eslint-plugin-react-refresh';
-import { globalIgnores } from 'eslint/config';
 
 // mainly use biome for formatting
 // biome is not compatible with eslint, so we use eslint for linting only
-export default tseslint.configs([
-	globalIgnores(['dist']),
+export default [
+	{
+		ignores: ['dist/**'],
+	},
 	{
 		files: ['**/*.{ts,tsx}'],
+		languageOptions: {
+			parser: tsparser,
+			parserOptions: {
+				ecmaVersion: 'latest',
+				sourceType: 'module',
+				ecmaFeatures: {
+					jsx: true,
+				},
+			},
+		},
 		plugins: {
+			'@typescript-eslint': tseslint,
 			'react-hooks': reactHooks,
 			'react-refresh': reactRefresh,
 		},
@@ -18,4 +31,4 @@ export default tseslint.configs([
 			...reactRefresh.configs.vite.rules,
 		},
 	},
-]);
+];
