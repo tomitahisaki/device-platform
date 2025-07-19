@@ -5,12 +5,12 @@ on:
     branches: [main]
     paths:
       - "backend/**"
-      - ".github/workflows/ci.yml" # Only run on changes to backend or CI config
+      - ".github/workflows/backend-ci.yml" # Only run on changes to backend or CI config
   pull_request:
     branches: [main]
     paths:
       - "backend/**"
-      - ".github/workflows/ci.yml" # Only run on changes to backend or CI config
+      - ".github/workflows/backend-ci.yml" # Only run on changes to backend or CI config
 
 jobs:
   lint:
@@ -35,3 +35,25 @@ jobs:
         with:
           version: v2.1.6
           working-directory: backend
+
+  test:
+    name: Run go test
+    runs-on: ubuntu-latest
+    needs: lint # Ensure linting passes before running tests
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: backend/go.mod
+          cache: true
+          cache-dependency-path: |
+            backend/go.mod
+            backend/go.sum
+
+      - name: Run go test
+        working-directory: backend
+        run: go test -v ./...
