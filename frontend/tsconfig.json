@@ -1,35 +1,34 @@
 {
-  "compilerOptions": {
-    /* 基本設定 */
-    "target": "ESNext",
-    "module": "ESNext",
-    "moduleResolution": "Node",
-    "lib": ["DOM", "DOM.Iterable", "ESNext"],
-    "jsx": "react-jsx",
-    "baseUrl": ".",
-    "paths": {
-      "@/*": ["src/*"]
-    },
-    "types": ["vite/client"],
+	"compilerOptions": {
+		/* 基本設定 */
+		"target": "ESNext",
+		"module": "ESNext",
+		"moduleResolution": "Node",
+		"lib": ["DOM", "DOM.Iterable", "ESNext"],
+		"jsx": "react-jsx",
+		"baseUrl": ".",
+		"paths": {
+			"@/*": ["src/*"]
+		},
+		"types": ["vite/client"],
 
-    /* 型チェックと安全性 */
-    "strict": true,
-    "noImplicitReturns": true,
-    "noFallthroughCasesInSwitch": true,
-    "forceConsistentCasingInFileNames": true,
+		/* 型チェックと安全性 */
+		"strict": true,
+		"noImplicitReturns": true,
+		"noFallthroughCasesInSwitch": true,
+		"forceConsistentCasingInFileNames": true,
 
-    /* モジュール読み込み */
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-    "resolveJsonModule": true,
+		/* モジュール読み込み */
+		"esModuleInterop": true,
+		"allowSyntheticDefaultImports": true,
+		"resolveJsonModule": true,
 
-    /* その他 */
-    "isolatedModules": true,
-    "skipLibCheck": true,
-    "noEmit": true,
-    "useDefineForClassFields": true
-  },
-  "include": ["src"],
-  "exclude": ["dist", "node_modules"]
+		/* その他 */
+		"isolatedModules": true,
+		"skipLibCheck": true,
+		"noEmit": true,
+		"useDefineForClassFields": true
+	},
+	"include": ["src"],
+	"exclude": ["dist", "node_modules"]
 }
-
