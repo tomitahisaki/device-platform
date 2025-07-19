@@ -40,4 +40,3 @@ export function MuiThemeProvider({ children }: MuiThemeProviderProps) {
   );
 }
 
-export default theme;
