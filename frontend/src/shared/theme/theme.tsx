@@ -29,7 +29,7 @@ const theme = createTheme({
 
 type MuiThemeProviderProps = {
 	children: ReactNode;
-}
+};
 
 export function MuiThemeProvider({ children }: MuiThemeProviderProps) {
 	return (

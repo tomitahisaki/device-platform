@@ -5,7 +5,6 @@ export function FeatureCard({
 	icon,
 	title,
 	description,
-	color = 'primary',
 }: FeatureCardProps) {
 	return (
 		<Card

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import type { SensorData } from '../types/sensor';
 
 export function useSensorData() {
@@ -6,7 +6,7 @@ export function useSensorData() {
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
 
-	const fetchSensorData = async () => {
+	const fetchSensorData = useCallback(async () => {
 		try {
 			setLoading(true);
 
@@ -49,11 +49,11 @@ export function useSensorData() {
 		} finally {
 			setLoading(false);
 		}
-	};
+	}, []);
 
 	useEffect(() => {
 		fetchSensorData();
-	}, []);
+	}, [fetchSensorData]);
 
 	const refresh = () => {
 		setError(null);

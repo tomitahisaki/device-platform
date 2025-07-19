@@ -1,4 +1,4 @@
-import { Paper, Typography, Button, Container } from '@mui/material';
+import { Paper, Typography, Button } from '@mui/material';
 import { Link } from 'react-router-dom';
 import type { HomeFeatureConfig } from '../types';
 

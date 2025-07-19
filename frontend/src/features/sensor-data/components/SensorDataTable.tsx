@@ -60,8 +60,8 @@ export function SensorDataTable({ sensorData }: SensorDataTableProps) {
 					</TableRow>
 				</TableHead>
 				<TableBody>
-					{sensorData.map((data, index) => (
-						<TableRow key={index} hover>
+					{sensorData.map((data) => (
+						<TableRow key={data.id} hover>
 							<TableCell>
 								<Chip
 									label={formatTemperature(data.temperature)}

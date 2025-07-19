@@ -3,7 +3,6 @@ import {
 	CardContent,
 	CardActions,
 	Typography,
-	Button,
 } from '@mui/material';
 import type { ReactNode } from 'react';
 

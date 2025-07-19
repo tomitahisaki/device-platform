@@ -38,13 +38,12 @@ export function HomePage() {
 			<HeroSection config={config} />
 
 			<Grid container spacing={3}>
-				{features.map((feature, index) => (
-					<Grid size={{ xs: 12, md: 4 }} key={index}>
+				{features.map((feature) => (
+					<Grid size={{ xs: 12, md: 4 }} key={feature.title}>
 						<FeatureCard
 							icon={feature.icon}
 							title={feature.title}
 							description={feature.description}
-							color={feature.color}
 						/>
 					</Grid>
 				))}
