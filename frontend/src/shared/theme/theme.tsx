@@ -27,7 +27,7 @@ const theme = createTheme({
 	},
 });
 
-interface MuiThemeProviderProps {
+type MuiThemeProviderProps = {
 	children: ReactNode;
 }
 

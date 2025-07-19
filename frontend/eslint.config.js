@@ -1,8 +1,9 @@
+import tseslint from '@typescript-eslint/eslint-plugin';
 import reactHooks from 'eslint-plugin-react-hooks';
 import reactRefresh from 'eslint-plugin-react-refresh';
 import { globalIgnores } from 'eslint/config';
 
-export default [
+export default tseslint.configs([
 	globalIgnores(['dist']),
 	{
 		files: ['**/*.{ts,tsx}'],
@@ -11,8 +12,8 @@ export default [
 			'react-refresh': reactRefresh,
 		},
 		rules: {
-			...reactHooks.configs['recommended'].rules,
+			...reactHooks.configs['recommended-latest'].rules,
 			...reactRefresh.configs.vite.rules,
 		},
 	},
-];
+]);
