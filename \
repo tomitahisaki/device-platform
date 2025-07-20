@@ -39,7 +39,6 @@ jobs:
   test:
     name: Run frontend tests
     runs-on: ubuntu-latest
-    needs: lint # Ensure linting passes before running tests
 
     steps:
       - name: Checkout code
@@ -59,3 +58,4 @@ jobs:
       - name: Run Tests
         run: npm run test:run
         working-directory: frontend
+
