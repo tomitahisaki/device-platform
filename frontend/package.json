@@ -9,6 +9,7 @@
     "test": "vitest",
     "test:run": "vitest run",
     "test:ui": "vitest --ui",
+    "test:e2e": "playwright test",
     "lint": "biome lint . && eslint . --ext .ts,.tsx",
     "lint:fix": "biome lint . --write && eslint . --ext ts,tsx --fix",
     "format": "biome format . --write",
