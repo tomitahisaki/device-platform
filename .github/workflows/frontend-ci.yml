@@ -16,7 +16,6 @@ jobs:
   build:
     name: Run frontend ci
     runs-on: ubuntu-latest
-    workintg-directory: frontend
 
     steps:
       - name: Checkout code
@@ -30,6 +29,8 @@ jobs:
 
       - name: Install dependencies
         run: npm install
+        working-directory: frontend
 
       - name: Run Lint
         run: npm run lint
+        working-directory: frontend
