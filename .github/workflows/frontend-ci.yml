@@ -1,15 +1,15 @@
-name: Backend CI
+name: frontend CI
 
 on:
   push:
     branches: [main]
     paths:
-      - "backend/**"
+      - "frontend/**"
       - ".github/workflows/frontend-ci.yml" # Only run on changes to frontend or CI config
   pull_request:
     branches: [main]
     paths:
-      - "backend/**"
+      - "frontend/**"
       - ".github/workflows/frontend-ci.yml" # Only run on changes to frontend or CI config
 
 jobs:
