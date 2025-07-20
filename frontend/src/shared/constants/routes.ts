@@ -1,7 +1,6 @@
 // パスの定数定義
 export const ROUTES = {
 	HOME: '/',
-	HOME_ALT: '/home',
 	SENSOR_DATA: '/sensor-data',
 } as const;
 

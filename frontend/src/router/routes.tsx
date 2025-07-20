@@ -14,10 +14,6 @@ export const routes: RouteObject[] = [
 				element: <HomePage />,
 			},
 			{
-				path: 'home',
-				element: <HomePage />,
-			},
-			{
 				path: 'sensor-data',
 				element: <SensorDataPage />,
 			},
@@ -27,10 +23,6 @@ export const routes: RouteObject[] = [
 
 // ルートの設定をオブジェクトとしてエクスポート（管理しやすくするため）
 export const routeConfig = {
-	home: {
-		path: '/home',
-		element: <HomePage />,
-	},
 	sensorData: {
 		path: '/sensor-data',
 		element: <SensorDataPage />,
