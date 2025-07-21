@@ -1,18 +1,24 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { renderHook, waitFor } from '../../../test/test-utils';
 import { useSensorData } from './useSensorData';
+import { sensorDataRepository } from '../repositories/sensorDataRepository';
 
-// Fetch APIをモック
-const mockFetch = vi.fn();
-(globalThis as any).fetch = mockFetch;
+// Repository層をモック
+vi.mock('../repositories/sensorDataRepository', () => ({
+	sensorDataRepository: {
+		getAll: vi.fn(),
+	},
+}));
+
+const mockSensorDataRepository = vi.mocked(sensorDataRepository);
 
 describe('useSensorData', () => {
 	beforeEach(() => {
-		mockFetch.mockClear();
+		mockSensorDataRepository.getAll.mockClear();
 	});
 
 	it('returns initial state correctly', () => {
-		mockFetch.mockRejectedValue(new Error('API Error'));
+		mockSensorDataRepository.getAll.mockRejectedValue(new Error('API Error'));
 
 		const { result } = renderHook(() => useSensorData());
 
@@ -22,7 +28,7 @@ describe('useSensorData', () => {
 	});
 
 	it('loads dummy data when fetch fails', async () => {
-		mockFetch.mockRejectedValue(new Error('API Error'));
+		mockSensorDataRepository.getAll.mockRejectedValue(new Error('API Error'));
 
 		const { result } = renderHook(() => useSensorData());
 
@@ -45,10 +51,7 @@ describe('useSensorData', () => {
 			},
 		];
 
-		mockFetch.mockResolvedValue({
-			ok: true,
-			json: () => Promise.resolve(mockData),
-		});
+		mockSensorDataRepository.getAll.mockResolvedValue(mockData);
 
 		const { result } = renderHook(() => useSensorData());
 
@@ -61,10 +64,7 @@ describe('useSensorData', () => {
 	});
 
 	it('handles refresh correctly', async () => {
-		mockFetch.mockResolvedValue({
-			ok: true,
-			json: () => Promise.resolve([]),
-		});
+		mockSensorDataRepository.getAll.mockResolvedValue([]);
 
 		const { result } = renderHook(() => useSensorData());
 

@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import type { SensorData } from '../types/sensor';
+import { sensorDataRepository } from '../repositories/sensorDataRepository';
 
 export function useSensorData() {
 	const [sensorData, setSensorData] = useState<SensorData[]>([]);
@@ -10,16 +11,21 @@ export function useSensorData() {
 		try {
 			setLoading(true);
 
-			// APIエンドポイントからデータを取得
-			const response = await fetch('/api/sensor-data');
-			if (!response.ok) {
-				throw new Error('データの取得に失敗しました');
-			}
-
-			const data = await response.json();
+			// Repository層を通してAPIからデータを取得
+			const data = await sensorDataRepository.getAll();
+			
 			setSensorData(data);
+			setError(null); // 成功時はエラーをクリア
 		} catch (err) {
-			setError(err instanceof Error ? err.message : 'エラーが発生しました');
+			console.warn('API取得に失敗しました。ダミーデータを使用します:', err);
+			
+			// Axiosエラーの処理
+			let errorMessage = 'エラーが発生しました';
+			if (err instanceof Error) {
+				errorMessage = err.message;
+			}
+			
+			setError(errorMessage);
 
 			// 開発時のダミーデータ
 			const dummyData: SensorData[] = [
