@@ -5,11 +5,8 @@ import (
 	"gorm.io/gorm"
 )
 
-func SetupRouter(db *gorm.DB) *gin.Engine {
-	r := gin.Default()
-	v1 := r.Group("/api/v1")
+func SetupRouter(r *gin.Engine, db *gorm.DB) {
+	api := r.Group("/api/v1")
 
-	RegisterSensorDataRoutes(v1, db)
-
-	return r
+	RegisterSensorDataRoutes(api, db)
 }
