@@ -30,14 +30,6 @@ export default function Layout() {
 						<Button
 							color="inherit"
 							component={Link}
-							to={ROUTES.HOME_ALT}
-							sx={{ textTransform: 'none' }}
-						>
-							ホーム
-						</Button>
-						<Button
-							color="inherit"
-							component={Link}
 							to={ROUTES.SENSOR_DATA}
 							sx={{ textTransform: 'none' }}
 						>
