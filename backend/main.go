@@ -22,12 +22,12 @@ func main() {
 
 	// Load environment variables from .env file
 	_ = godotenv.Load()
-	
+
 	// Get CORS origins from environment variable
 	allowOrigins := strings.Split(os.Getenv("CORS_ALLOW_ORIGINS"), ",")
-	
+
 	r := gin.Default()
-	
+
 	// Configure CORS
 	r.Use(cors.New(cors.Config{
 		AllowOrigins:     allowOrigins,
