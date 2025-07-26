@@ -33,22 +33,22 @@ export function useSensorData() {
 					id: 1,
 					temperature: 22.5,
 					humidity: 45.2,
-					created_at: '2024-01-15T10:30:00Z',
-					updated_at: '2024-01-15T10:30:00Z',
+					createdAt: '2024-01-15T10:30:00Z',
+					updatedAt: '2024-01-15T10:30:00Z',
 				},
 				{
 					id: 2,
 					temperature: 23.1,
 					humidity: 48.7,
-					created_at: '2024-01-15T11:30:00Z',
-					updated_at: '2024-01-15T11:30:00Z',
+					createdAt: '2024-01-15T11:30:00Z',
+					updatedAt: '2024-01-15T11:30:00Z',
 				},
 				{
 					id: 3,
 					temperature: 21.8,
 					humidity: 52.1,
-					created_at: '2024-01-15T12:30:00Z',
-					updated_at: '2024-01-15T12:30:00Z',
+					createdAt: '2024-01-15T12:30:00Z',
+					updatedAt: '2024-01-15T12:30:00Z',
 				},
 			];
 			setSensorData(dummyData);

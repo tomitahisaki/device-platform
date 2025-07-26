@@ -20,6 +20,7 @@ interface SensorDataTableBodyProps {
 
 export function SensorDataTableBody({ sensorData }: SensorDataTableBodyProps) {
 	const formatDate = (date: string) => new Date(date).toLocaleString('ja-JP');
+  console.log('Rendering SensorDataTableBody with data:', sensorData);
 
 	return (
 		<TableBody>
@@ -41,7 +42,7 @@ export function SensorDataTableBody({ sensorData }: SensorDataTableBodyProps) {
 					</TableCell>
 					<TableCell>
 						<Typography variant="body2" color="text.secondary">
-							{formatDate(data.created_at)}
+							{formatDate(data.createdAt)}
 						</Typography>
 					</TableCell>
 				</TableRow>
