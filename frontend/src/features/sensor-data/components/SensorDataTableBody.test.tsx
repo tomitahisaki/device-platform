@@ -9,15 +9,15 @@ describe('SensorDataTableBody', () => {
 			id: 1,
 			temperature: 25.5,
 			humidity: 45.2,
-			created_at: '2023-01-01T12:00:00Z',
-			updated_at: '2023-01-01T12:00:00Z',
+			createdAt: '2023-01-01T12:00:00Z',
+			updatedAt: '2023-01-01T12:00:00Z',
 		},
 		{
 			id: 2,
 			temperature: 18.0,
 			humidity: 65.8,
-			created_at: '2023-01-02T15:30:00Z',
-			updated_at: '2023-01-02T15:30:00Z',
+			createdAt: '2023-01-02T15:30:00Z',
+			updatedAt: '2023-01-02T15:30:00Z',
 		},
 	];
 
