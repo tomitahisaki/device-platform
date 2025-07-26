@@ -46,8 +46,8 @@ describe('useSensorData', () => {
 				id: 1,
 				temperature: 25.5,
 				humidity: 60.0,
-				created_at: '2023-01-01T10:00:00Z',
-				updated_at: '2023-01-01T10:00:00Z',
+				createdAt: '2023-01-01T10:00:00Z',
+				updatedAt: '2023-01-01T10:00:00Z',
 			},
 		];
 
