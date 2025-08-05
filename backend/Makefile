@@ -35,5 +35,5 @@ migrate-status:
     -path=/migrations -database "$(DB_URL)" version
 
 seed:
-	docker compose exec backend go run internal/seed/main.go
+	docker compose run --rm seed
 

@@ -2,9 +2,8 @@ services:
   backend:
     build:
       context: ./backend
+      dockerfile: Dockerfile
     container_name: raspi_backend
-    volumes:
-      - ./backend:/app
     working_dir: /app
     ports:
       - "8080:8080"
@@ -14,7 +13,6 @@ services:
       - db
     networks:
       - backend_net
-    command: ["air"]
 
   frontend:
     # make sure to use platform arm64
@@ -56,6 +54,22 @@ services:
     image: migrate/migrate
     volumes:
       - ./backend/migrations:/migrations
+    depends_on:
+      - db
+    networks:
+      - backend_net
+
+  seed:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      target: builder
+    working_dir: /app
+    command: go run internal/seed/main.go
+    volumes:
+      - ./backend:/app
+    env_file:
+      - ./backend/.env
     depends_on:
       - db
     networks:
