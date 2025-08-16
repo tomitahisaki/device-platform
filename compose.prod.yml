@@ -1,0 +1,119 @@
+# ===================================
+# 本番環境用のDocker Compose設定
+# ===================================
+# 使用方法: docker-compose -f compose.prod.yml up -d
+
+services:
+  # ===================================
+  # フロントエンドサービス（Nginx + React）
+  # ===================================
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: device_platform_frontend_prod
+    ports:
+      # 本番環境では80番ポートを使用
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - app_network
+    restart: unless-stopped
+    # ヘルスチェック設定
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # ===================================
+  # バックエンドサービス（Go + Gin）
+  # ===================================
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: device_platform_backend_prod
+    # 本番環境では外部に直接公開しない
+    expose:
+      - "8080"
+    env_file:
+      - ./backend/.env.prod # 本番用環境変数ファイル
+    depends_on:
+      - db
+    networks:
+      - app_network
+    restart: unless-stopped
+    # ヘルスチェック設定
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ===================================
+  # データベースサービス（PostgreSQL）
+  # ===================================
+  db:
+    image: postgres:15-alpine
+    container_name: device_platform_db_prod
+    environment:
+      POSTGRES_DB: device_platform_prod
+      POSTGRES_USER: ${DB_USER:-device_user}
+      POSTGRES_PASSWORD: ${DB_PASSWORD} # 環境変数から読み込み
+    # 本番環境では外部に直接公開しない
+    expose:
+      - "5432"
+    volumes:
+      - pgdata_prod:/var/lib/postgresql/data
+      # 初期化スクリプト用
+      - ./backend/migrations:/docker-entrypoint-initdb.d
+    networks:
+      - app_network
+    restart: unless-stopped
+    # データベースのヘルスチェック
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U ${DB_USER:-device_user} -d device_platform_prod",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # ===================================
+  # リバースプロキシ（オプション）
+  # ===================================
+  # 本番環境でHTTPS終端やロードバランシングが必要な場合
+  # nginx-proxy:
+  #   image: nginx:alpine
+  #   container_name: device_platform_proxy
+  #   ports:
+  #     - "443:443"
+  #   volumes:
+  #     - ./nginx/ssl:/etc/nginx/ssl
+  #     - ./nginx/proxy.conf:/etc/nginx/nginx.conf
+  #   depends_on:
+  #     - frontend
+  #   networks:
+  #     - app_network
+  #   restart: unless-stopped
+
+# ===================================
+# 永続化ボリューム設定
+# ===================================
+volumes:
+  # 本番用データベースデータ
+  pgdata_prod:
+    driver: local
+
+# ===================================
+# ネットワーク設定
+# ===================================
+networks:
+  app_network:
+    driver: bridge
+    # セキュリティのため内部通信のみ許可
