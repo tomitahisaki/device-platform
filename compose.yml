@@ -1,4 +1,30 @@
 services:
+  # ===================================
+  # フロントエンドサービス（Nginx + React）
+  # ===================================
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: raspi_frontend
+    ports:
+      # ホストの3000番ポートをコンテナの80番ポートにマッピング
+      - "3000:80"
+    depends_on:
+      - backend
+    networks:
+      - backend_net
+    # ヘルスチェック設定
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # ===================================
+  # バックエンドサービス（Go + Gin）
+  # ===================================
   backend:
     build:
       context: ./backend
