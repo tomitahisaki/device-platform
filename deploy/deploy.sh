@@ -7,7 +7,7 @@
 set -e  # エラー時に停止
 
 # 設定値
-VPS_HOST="your-vps-host.com"
+VPS_HOST="ik1-339-29510.vs.sakura.ne.jp"
 VPS_USER="deploy"
 DEPLOY_PATH="/var/www/app"
 CURRENT_PATH="$DEPLOY_PATH/current"
@@ -81,6 +81,14 @@ deploy_to_vps() {
         frontend/dist/ \
         $VPS_USER@$VPS_HOST:$RELEASE_PATH/
     
+    # Nginx設定ファイルの更新
+    log "Nginx設定ファイルを更新中..."
+    scp deploy/nginx/vps-nginx.conf $VPS_USER@$VPS_HOST:/tmp/
+    ssh $VPS_USER@$VPS_HOST "
+        sudo cp /tmp/vps-nginx.conf /etc/nginx/sites-available/device-platform
+        sudo nginx -t
+    "
+    
     # シンボリックリンク更新
     log "シンボリックリンクを更新中..."
     ssh $VPS_USER@$VPS_HOST "
@@ -121,7 +129,32 @@ update_api() {
 }
 
 # ===================================
-# ヘルスチェック
+# 設定確認機能
+# ===================================
+check_config() {
+    log "設定ファイルを確認中..."
+    
+    # Nginx設定確認
+    ssh $VPS_USER@$VPS_HOST "
+        echo '=== Nginx設定確認 ==='
+        sudo nginx -t
+        echo ''
+        echo '=== 有効なサイト ==='
+        ls -la /etc/nginx/sites-enabled/
+        echo ''
+    "
+    
+    # PostgreSQL設定確認
+    log "PostgreSQL設定を確認中..."
+    ssh $VPS_USER@$VPS_HOST "
+        echo '=== PostgreSQL設定確認 ==='
+        docker exec device_platform_db postgres --version 2>/dev/null || echo 'PostgreSQLコンテナが起動していません'
+        echo ''
+    "
+}
+
+# ===================================
+# ヘルスチェック機能
 # ===================================
 health_check() {
     log "ヘルスチェック実行中..."
@@ -195,14 +228,18 @@ main() {
         "check")
             health_check
             ;;
+        "config")
+            check_config
+            ;;
         *)
-            echo "使用方法: $0 [build|deploy|api|rollback|check]"
+            echo "使用方法: $0 [build|deploy|api|rollback|check|config]"
             echo ""
             echo "  build     - ローカルでフロントエンドをビルド"
             echo "  deploy    - フロントエンドをビルドしてVPSにデプロイ"
             echo "  api       - APIコンテナのみ更新"
             echo "  rollback  - 前回のリリースにロールバック"
             echo "  check     - ヘルスチェック実行"
+            echo "  config    - 設定ファイル確認"
             exit 1
             ;;
     esac

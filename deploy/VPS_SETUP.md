@@ -143,8 +143,8 @@ docker-compose -f compose.vps.yml logs -f
 # Certbot インストール
 sudo apt install certbot python3-certbot-nginx
 
-# 証明書取得
-sudo certbot --nginx -d your-domain.com -d www.your-domain.com
+# 証明書取得（さくらのVPS用）
+sudo certbot --nginx -d ik1-339-29510.vs.sakura.ne.jp
 
 # 自動更新設定
 sudo crontab -e

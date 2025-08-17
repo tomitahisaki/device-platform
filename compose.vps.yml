@@ -80,8 +80,13 @@ services:
       - postgres_data:/var/lib/postgresql/data
       # マイグレーションファイル
       - ./backend/migrations:/docker-entrypoint-initdb.d
-      # PostgreSQL設定ファイル（メモリ最適化）
-      - ./deploy/postgresql/postgresql.conf:/etc/postgresql/postgresql.conf
+      # PostgreSQL設定ファイル（正しいパスに配置）
+      - ./deploy/postgresql/postgresql.conf:/var/lib/postgresql/data/postgresql.conf
+
+    # PostgreSQL設定ファイルを有効化するためのコマンド
+    command: >
+      postgres 
+      -c config_file=/var/lib/postgresql/data/postgresql.conf
 
     networks:
       - api_network
