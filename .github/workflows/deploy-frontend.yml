@@ -1,0 +1,78 @@
+name: Deploy Frontend (manual)
+
+on:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: 'Git ref to deploy (branch, tag, or SHA)'
+        default: 'main'
+        required: true
+      npm_script:
+        description: 'Build script (package.json scripts)'
+        default: 'build'
+        required: true
+      dry_run:
+        description: 'Dry-run rsync (no write)'
+        type: boolean
+        default: true
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    defaults:
+      run:
+        working-directory: frontend
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref }}
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: 'frontend/package-lock.json'
+
+      - name: Install deps
+        run: npm ci
+
+      - name: Build
+        run: npm run ${{ inputs.npm_script }}
+
+      - name: Deploy via rsync
+        if: ${{ !inputs.dry_run }}
+        uses: burnett01/rsync-deployments@7.0.1
+        with:
+          switches: -avz --delete
+          path: frontend/dist/
+          remote_path: ${{ secrets.WWW_PATH }}/
+          remote_host: ${{ secrets.VPS_HOST }}
+          remote_user: ${{ secrets.VPS_USER }}
+          remote_key:  ${{ secrets.VPS_SSH_KEY }}
+
+      - name: Dry-run (no changes)
+        if: ${{ inputs.dry_run }}
+        uses: burnett01/rsync-deployments@7.0.1
+        with:
+          switches: -avzn --delete   # ← n = dry-run
+          path: frontend/dist/
+          remote_path: ${{ secrets.WWW_PATH }}/
+          remote_host: ${{ secrets.VPS_HOST }}
+          remote_user: ${{ secrets.VPS_USER }}
+          remote_key:  ${{ secrets.VPS_SSH_KEY }}
+
+      # 任意：Nginx 設定変更時だけ reload（静的配信だけなら基本不要）
+      - name: Reload nginx (optional)
+        if: ${{ !inputs.dry_run }}
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          script: sudo nginx -t && sudo systemctl reload nginx
+
