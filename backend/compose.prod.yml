@@ -1,12 +1,9 @@
 name: device_platform
 services:
   app:
-    build:
-      dockerfile: Dockerfile.prod # ← 本番用を明示
-    env_file:
-      - ./.env # ← サーバだけにある .env を読む
-    ports:
-      - "127.0.0.1:3000:3000" # 外部直アクセス不可（Nginxのみ可）
+    image: ghcr.io/tomitahisaki/device-platform-backend:${IMAGE_TAG:-stable}
+    env_file: [ ./.env.prod ]
+    ports: ["127.0.0.1:3000:3000"]
     depends_on:
       db:
         condition: service_healthy
