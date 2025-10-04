@@ -33,9 +33,7 @@ services:
       - pg_password
 
   migrator:
-    image: migrate/migrate:4
-    volumes: 
-      - ./migrations:/migrations
+    image: ghcr.io/tomitahisaki/device-platform-backend:${IMAGE_TAG:-stable}
     depends_on:
       db:
         condition: service_healthy
