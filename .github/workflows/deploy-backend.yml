@@ -1,3 +1,4 @@
+
 name: Deploy Backend (manual, GHCR)
 
 on:
@@ -71,7 +72,37 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.VPS_SSH_KEY }}
 
-      # ===== Dry-run (計画表示のみ) =====
+      # ====== (deploy用) リポジトリをチェックアウト：SCPで配布するため ======
+      - name: Checkout (for deploy)
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref }}
+
+      # ====== compose.prod.yml をVPSへ毎回配布（原子的に置換＋バックアップ） ======
+      - name: Push compose to VPS
+        if: ${{ !inputs.dry_run }}
+        run: |
+          set -euo pipefail
+          scp -o StrictHostKeyChecking=accept-new backend/compose.prod.yml \
+            ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:/tmp/compose.prod.yml.new
+          ssh -o StrictHostKeyChecking=accept-new ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} '
+            set -euo pipefail
+            mkdir -p /opt/myapp/backend
+            if [ -f /opt/myapp/backend/compose.prod.yml ]; then
+              cp /opt/myapp/backend/compose.prod.yml /opt/myapp/backend/compose.prod.yml.bak.$(date +%Y%m%d%H%M%S)
+            fi
+            mv /tmp/compose.prod.yml.new /opt/myapp/backend/compose.prod.yml
+          '
+
+      # （ホストマウントで migrations を使う構成ならコメントアウト解除）
+      # - name: Sync migrations to VPS (if host-mounted)
+      #   if: ${{ !inputs.dry_run }}
+      #   run: |
+      #     rsync -az --delete -e "ssh -o StrictHostKeyChecking=accept-new" \
+      #       backend/migrations/ \
+      #       ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:/opt/myapp/backend/migrations/
+
+      # ===== Dry-run（計画表示のみ・サーバ状態は変更しない） =====
       - name: Plan (dry-run)
         if: ${{ inputs.dry_run }}
         env:
@@ -111,7 +142,7 @@ jobs:
           '
 
       # ===== 実デプロイ =====
-      - name: Deploy on VPS (pull & up)
+      - name: Deploy on VPS (migrate, pull & up)
         if: ${{ !inputs.dry_run }}
         env:
           TAG: ${{ inputs.image_tag || github.sha }}
@@ -121,7 +152,14 @@ jobs:
             set -euo pipefail
             cd /opt/myapp/backend
 
-            # Login GHCR for pull
+            # 最新composeでサービス確認（migrator 必須）
+            echo "[check] services:"
+            docker compose -f compose.prod.yml config --services
+            if ! docker compose -f compose.prod.yml config --services | grep -qx migrator; then
+              echo "[ERROR] migrator サービスが compose.prod.yml に見つかりません"; exit 1
+            fi
+
+            # GHCR login
             echo "'"${{ secrets.GHCR_TOKEN }}"'" | docker login ghcr.io -u "'"${{ secrets.GHCR_USERNAME }}"'" --password-stdin
 
             # DB migrate
@@ -133,6 +171,7 @@ jobs:
           '
 
       - name: Readiness check
+        if: ${{ !inputs.dry_run }}
         run: |
           set -e
           for i in $(seq 1 30); do
@@ -146,5 +185,4 @@ jobs:
           ssh -o StrictHostKeyChecking=accept-new ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} \
             "cd /opt/myapp/backend && docker compose -f compose.prod.yml logs --tail=120 app || true"
           exit 1
-
 
