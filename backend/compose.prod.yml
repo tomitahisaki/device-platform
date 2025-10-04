@@ -32,6 +32,21 @@ services:
     secrets:
       - pg_password
 
+  migrator:
+    image: migrate/migrate4
+    volumes: ./migrations:/migrations
+    depends_on:
+      db:
+        condition: service_healthy
+    env_file:
+      ./.env.prod
+    entrypoint:
+      - sh
+      - -c
+      - >
+        DB_URL="postgres://${DB_USER}:${DB_PASSWORD}@db:${DB_PORT:-5432}/${DB_NAME}?sslmode=disable" &&
+        migrate -path=/migrations -database "$$DB_URL" up
+
 secrets:
   pg_password:
     file: ./secrets/pg_password
