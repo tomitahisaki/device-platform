@@ -125,7 +125,7 @@ jobs:
             echo "'"${{ secrets.GHCR_TOKEN }}"'" | docker login ghcr.io -u "'"${{ secrets.GHCR_USERNAME }}"'" --password-stdin
 
             # DB migrate
-            docker compose -f compose.prod.yml run --rm migrator
+            IMAGE_TAG='"$TAG"' docker compose -f compose.prod.yml run --rm migrator
 
             # Pull & restart only app service with the given tag (IMAGE_TAG)
             IMAGE_TAG='"$TAG"' docker compose -f compose.prod.yml pull app
