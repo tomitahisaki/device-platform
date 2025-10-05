@@ -1,8 +1,13 @@
+
 name: device_platform
 services:
   app:
     image: ghcr.io/tomitahisaki/device-platform-backend:${IMAGE_TAG:-stable}
     env_file: [ ./.env.prod ]
+    environment:
+      APP_ENV: production
+      # （アプリが DB_URL を使うなら注入）
+      DB_URL: postgres://$${DB_USER}:$${DB_PASSWORD}@db:$${DB_PORT:-5432}/$${DB_NAME}?sslmode=disable
     ports: ["127.0.0.1:3000:3000"]
     depends_on:
       db:
@@ -11,38 +16,44 @@ services:
 
   db:
     image: postgres:16
-    env_file:
-      - ./.env.prod
+    env_file: [ ./.env.prod ]
     environment:
-      POSTGRES_PASSWORD_FILE: /run/secrets/pg_password
+      # DB_* → Postgres公式にブリッジ
+      POSTGRES_USER: $${DB_USER}
+      POSTGRES_DB:   $${DB_NAME}
+      # パスワードはどちらか一方
+      # POSTGRES_PASSWORD_FILE: /run/secrets/pg_password
+      POSTGRES_PASSWORD: $${DB_PASSWORD}
     volumes:
       - pgdata:/var/lib/postgresql/data
-    expose:
-      - "5432"
+    expose: ["5432"]
     healthcheck:
-      test:
-        [
-          "CMD-SHELL",
-          "pg_isready -U $${DB_USER:-myapp} -d &${DB_NAME:-myapp}",
-        ]
+      # DB名に依存しない pg_isready（初期化中でもOK）
+      test: ["CMD-SHELL", "pg_isready -U $${DB_USER:-postgres} -h 127.0.0.1 -p $${DB_PORT:-5432} || exit 1"]
       interval: 5s
-      timeout: 3s
-      retries: 10
+      timeout: 5s
+      retries: 30
+      start_period: 20s
     restart: unless-stopped
-    secrets:
-      - pg_password
+    secrets: [ pg_password ]
 
   migrator:
+    # ★ app と同じイメージ（migrations/migrate 同梱）
     image: ghcr.io/tomitahisaki/device-platform-backend:${IMAGE_TAG:-stable}
     depends_on:
       db:
-        condition: service_healthy
-    env_file:
-      - ./.env.prod
+        # 起動順はCI/スクリプトで担保するので緩めるのが吉
+        condition: service_started
+    env_file: [ ./.env.prod ]
     entrypoint: ["sh","-c"]
     command: >
-      DB_URL="postgres://$${DB_USER}:$${DB_PASSWORD}@db:$${DB_PORT:-5432}/$${DB_NAME}?sslmode=disable"
-      && migrate -path=/migrations -database "$DB_URL" up
+      set -euo pipefail;
+      PW="$${DB_PASSWORD:-$(cat /run/secrets/pg_password 2>/dev/null)}";
+      DB_URL="postgres://$${DB_USER}:$${PW}@db:$${DB_PORT:-5432}/$${DB_NAME}?sslmode=disable";
+      echo "[migrator] files:"; ls -1 /app/migrations || true;
+      exec migrate -verbose -path=/app/migrations -database "$${DB_URL}" up
+    # secrets 運用の場合は有効化（envで DB_PASSWORD を持つなら外す）
+    secrets: [ pg_password ]
 
 secrets:
   pg_password:
@@ -50,3 +61,4 @@ secrets:
 
 volumes:
   pgdata:
+

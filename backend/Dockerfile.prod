@@ -1,30 +1,42 @@
 # build stage
 FROM golang:1.24.4-alpine AS build
 WORKDIR /app
+RUN apk add --no-cache ca-certificates git wget
 
-# ビルド用の依存関係をインストール
-RUN apk add --no-cache ca-certificates git
-
+# 依存取得 & ビルド
 COPY go.mod go.sum ./
 RUN go mod download
 COPY . .
-# メインのビルドパスに修正
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o server .
 
-# migrationsディレクトリをコピー
+# マイグレーションを同梱（レポジトリの位置に合わせてパス調整）
+# この Dockerfile が ./backend/Dockerfile.prod なら、下記でOK
+# （リポジトリ内に backend/migrations がある前提）
 RUN mkdir -p /app/migrations
 COPY ./migrations /app/migrations
 
-# run stage（軽量・安全）
+# migrate バイナリを同梱（軽量に単体DL）
+RUN wget -qO /usr/local/bin/migrate \
+  https://github.com/golang-migrate/migrate/releases/download/v4.17.1/migrate.linux-amd64 \
+  && chmod +x /usr/local/bin/migrate
+
+# run stage
 FROM alpine:latest
 RUN apk add --no-cache ca-certificates tzdata
 WORKDIR /app
+
+# 実行物と migrations / migrate をコピー
 COPY --from=build /app/server /app/server
 COPY --from=build /app/migrations /app/migrations
+COPY --from=build /usr/local/bin/migrate /usr/local/bin/migrate
+
 ENV GIN_MODE=release
 ENV PORT=3000
-EXPOSE 3000
-# セキュリティ強化のため非rootユーザーで実行
+
+# 本番は非root
 RUN adduser -D -g '' appuser
 USER appuser
+
+EXPOSE 3000
 ENTRYPOINT ["/app/server"]
+
