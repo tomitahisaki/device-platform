@@ -1,3 +1,4 @@
+
 name: device_platform
 services:
   app:
@@ -35,14 +36,14 @@ services:
         # ヘルス待ちまでは不要。起動順だけ担保して、実行側で失敗なら落ちる設計に。
         condition: service_started
     env_file: [ ./.env.prod ]
-    entrypoint: ["/bin/sh", "-c"]
-    # ★ command は「配列」ではなく 1 本のシェル文字列にする（重要）
-    command: >
-      set -eu;
-      DB_URL="postgres://$${DB_USER}:$${DB_PASSWORD}@db:$${DB_PORT:-5432}/$${DB_NAME}?sslmode=disable";
-      echo "[migrator] which migrate: $(command -v migrate)";
-      echo "[migrator] list /app/migrations:"; ls -1 /app/migrations;
-      exec migrate -verbose -path=/app/migrations -database "$$DB_URL" up
+    entrypoint:
+      - /bin/sh
+      - -ceu
+      - |-
+        DB_URL="postgres://$${DB_USER}:$${DB_PASSWORD}@db:$${DB_PORT:-5432}/$${DB_NAME}?sslmode=disable"
+        echo "[migrator] which migrate: $(command -v migrate)"
+        echo "[migrator] list /app/migrations:"; ls -1 /app/migrations
+        exec migrate -verbose -path=/app/migrations -database "$$DB_URL" up
 
 volumes:
   pgdata:
