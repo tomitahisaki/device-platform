@@ -15,10 +15,8 @@ RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o server .
 RUN mkdir -p /app/migrations
 COPY ./migrations /app/migrations
 
-# migrate バイナリを同梱（軽量に単体DL）
-RUN wget -qO /usr/local/bin/migrate \
-  https://github.com/golang-migrate/migrate/releases/download/v4.17.1/migrate.linux-amd64 \
-  && chmod +x /usr/local/bin/migrate
+# ★ ここで migrate をインストール（固定バージョン）
+RUN GOBIN=/usr/local/bin go install github.com/golang-migrate/migrate/v4/cmd/migrate@v4.17.1
 
 # run stage
 FROM alpine:latest
