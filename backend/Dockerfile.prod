@@ -16,7 +16,7 @@ RUN mkdir -p /app/migrations
 COPY ./migrations /app/migrations
 
 # ★ ここで migrate をインストール（固定バージョン）
-RUN GOBIN=/usr/local/bin go install github.com/golang-migrate/migrate/v4/cmd/migrate@v4.17.1
+RUN GOBIN=/usr/local/bin go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@v4.17.1
 
 # run stage
 FROM alpine:latest
