@@ -36,6 +36,7 @@ services:
         # ヘルス待ちまでは不要。起動順だけ担保して、実行側で失敗なら落ちる設計に。
         condition: service_started
     env_file: [ ./.env.prod ]
+    # 実行コマンドをcommandにおくと、配列として読み取られ、エラーになるためentrypointに追記
     entrypoint:
       - /bin/sh
       - -ceu

@@ -1,40 +1,60 @@
-# build stage
-FROM golang:1.24.4-alpine AS build
-WORKDIR /app
-RUN apk add --no-cache ca-certificates git wget
+# syntax=docker/dockerfile:1.7
 
-# 依存取得 & ビルド
+############################
+# Build stage
+############################
+ARG GO_VERSION=1.24.4
+FROM --platform=$BUILDPLATFORM golang:${GO_VERSION}-alpine AS build
+
+WORKDIR /src
+RUN apk add --no-cache ca-certificates git
+
+# 依存DLはキャッシュさせる
 COPY go.mod go.sum ./
-RUN go mod download
+RUN --mount=type=cache,target=/go/pkg/mod \
+    go mod download
+
+# ソースコピー
 COPY . .
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o server .
 
-# マイグレーションを同梱（レポジトリの位置に合わせてパス調整）
-# この Dockerfile が ./backend/Dockerfile.prod なら、下記でOK
-# （リポジトリ内に backend/migrations がある前提）
-RUN mkdir -p /app/migrations
-COPY ./migrations /app/migrations
+# ビルド（Goのビルドキャッシュも有効化）
+ARG TARGETOS TARGETARCH
+RUN --mount=type=cache,target=/go/pkg/mod \
+    --mount=type=cache,target=/root/.cache/go-build \
+    CGO_ENABLED=0 GOOS=$TARGETOS GOARCH=$TARGETARCH \
+    go build -trimpath -ldflags="-s -w" -o /out/server .
 
-# ★ ここで migrate をインストール（固定バージョン）
-RUN GOBIN=/usr/local/bin go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@v4.17.1
+# マイグレーション同梱（リポジトリの ./migrations 想定）
+COPY ./migrations /out/migrations
 
-# run stage
-FROM alpine:latest
+# migrate バイナリを Postgres ドライバ付きで同梱（/out にだけ配置）
+RUN --mount=type=cache,target=/go/pkg/mod \
+    GOBIN=/out go install -tags 'postgres' \
+      github.com/golang-migrate/migrate/v4/cmd/migrate@v4.17.1
+
+
+############################
+# Run stage
+############################
+FROM alpine:3.20
+
+# /bin/sh は busybox で入っています（migrator の entrypoint で使用）
 RUN apk add --no-cache ca-certificates tzdata
+
 WORKDIR /app
 
-# 実行物と migrations / migrate をコピー
-COPY --from=build /app/server /app/server
-COPY --from=build /app/migrations /app/migrations
-COPY --from=build /usr/local/bin/migrate /usr/local/bin/migrate
+# 実行物と migrate, migrations のみコピー（最小限）
+COPY --from=build /out/server /app/server
+COPY --from=build /out/migrate /usr/local/bin/migrate
+COPY --from=build /out/migrations /app/migrations
 
-ENV GIN_MODE=release
-ENV PORT=3000
+# 環境
+ENV GIN_MODE=release \
+    PORT=3000
 
-# 本番は非root
-RUN adduser -D -g '' appuser
-USER appuser
+# 非root（固定UID/GIDで再現性も確保）
+RUN addgroup -S app -g 10001 && adduser -S -G app -u 10001 app
+USER 10001:10001
 
 EXPOSE 3000
 ENTRYPOINT ["/app/server"]
-
