@@ -158,7 +158,6 @@ jobs:
             # 3) 切替
             IMAGE_TAG='"$TAG"' docker compose --env-file ./.env.prod -f compose.prod.yml up -d app
           '
-          '
 
       - name: Readiness check
         if: ${{ !inputs.dry_run }}
